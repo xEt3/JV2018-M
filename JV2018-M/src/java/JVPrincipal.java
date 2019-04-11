@@ -4,7 +4,8 @@ Proyecto: Juego de la vida.
  * y ejecución de la simulación por defecto. 
  * @since: prototipo1.0
  * @source: JVPrincipal.java 
- * @version: 2.0 - 2019/03/21
+ * @version: 2.1 - 2019/04/11
+ * @author: Grupo 0
  * @author: ajp
  */
 
