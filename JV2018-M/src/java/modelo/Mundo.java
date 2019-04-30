@@ -4,7 +4,13 @@
  * @since: prototipo1.2
  * @source: Simulacion.java 
  * @version: 2.0 - 2019.03.23
- * @author: ajp
+ * @author: Grupo Bloque 1
+ * @author: Antonio Ruiz
+ * @author: Atanas Genchev
+ * @author: Roberto Bastida
+ * @author: Ramon Moñino
+ * @author: Ramon Moreno
+ * @author: Ignacion belmonte
  */
 
 package modelo;
