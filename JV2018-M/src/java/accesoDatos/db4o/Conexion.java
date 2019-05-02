@@ -6,6 +6,7 @@
  * @source: Conexion.java 
  * @version: 2.1 - 2019/05/02
  * @author: ajp
+ 
  */
 
 package accesoDatos.db4o;
