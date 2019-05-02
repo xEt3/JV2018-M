@@ -2,8 +2,14 @@
  *  Implementa el concepto de Nif según el modelo2 
  *  @since: prototipo1.1
  *  @source: Nif.java 
- *  @version: 2.0 - 2019/03/23 
- *  @author: ajp
+ *  @version: 2.1 - 2019/04/30
+ *  @author: Grupo Bloque 1
+ *  @author Antonio Ruiz
+ *  @author Atanas Genchev
+ *  @author Roberto Bastida
+ *  @author Ignacio Belmonte
+ *  @author Ramon Moreno
+ *  @author Ramon Moñino
  */
 
 package modelo;
