@@ -8,7 +8,11 @@
  * @since: prototipo2.0
  * @source: UsuariosDAO.java 
  * @version: 2.0 - 2019/03/25 
- * @author: ajp
+ * @author: Grupo 2
+ * @author: Javier Muñoz Iniesta
+ * @author: Jose Manuel Ibáñez Sola-Belando
+ * @author: Juan Carlos Peña Fernández
+ * @author: Nilo Gómez Fernández
  */
 
 package accesoDatos.fichero;
