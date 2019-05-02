@@ -102,8 +102,12 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public String listarId() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder resultado = new StringBuilder();
+		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
+		while (res.hasNext()) {
+			resultado.append(res.next().getId());
+		}
+	return resultado.toString();
 	}
 
 	@Override
