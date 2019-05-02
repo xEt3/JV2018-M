@@ -17,34 +17,65 @@
 
 package accesoDatos.db4o;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.memoria.DAOIndexSort;
-import modelo.Identificable;
-import modelo.ModeloException;
 import modelo.Mundo;
 
-public class MundosDAO extends DAOIndexSort implements OperacionesDAO {
+public class MundosDAO implements OperacionesDAO {
+
+	// Singleton.
+	private static MundosDAO instance;
+
+	// Base de datos
+	private ObjectContainer db;
+
+	/**
+	 * Constructor por defecto de uso interno Solo se ejecutara una vez.
+	 */
+	private MundosDAO() {
+		db = Conexion.getInstance();
+	}
+
+	/**
+	 * Método estático de acceso a la instancia única. Si no existe la crea
+	 * invocando al constructor interno. Utiliza inicialización diferida. Sólo se
+	 * crea una vez; instancia única -patrón singleton-
+	 * 
+	 * @return instance
+	 */
+	public static MundosDAO getInstance() {
+		if (instance == null) {
+			instance = new MundosDAO();
+		}
+		return instance;
+	}
 
 	@Override
 	public Object obtener(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+		query.constrain(Mundo.class);
+		query.descend("nombre").constrain(id);
+		ObjectSet<Mundo> result = query.execute();
+		return result.next();
 	}
 
 	@Override
 	public List obtenerTodos() {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+		query.constrain(Mundo.class);
+		ObjectSet<Mundo> result = query.execute();
+		return result;
 	}
 
 	@Override
 	public void alta(Object obj) throws DatosException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -56,7 +87,7 @@ public class MundosDAO extends DAOIndexSort implements OperacionesDAO {
 	@Override
 	public void actualizar(Object obj) throws DatosException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -74,8 +105,7 @@ public class MundosDAO extends DAOIndexSort implements OperacionesDAO {
 	@Override
 	public void borrarTodo() {
 		// TODO Auto-generated method stub
-		
-	}
 
+	}
 
 } // class
