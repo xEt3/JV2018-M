@@ -17,18 +17,13 @@
 
 package accesoDatos.db4o;
 
-import java.util.ArrayList;
-import java.util.List;
 
+import java.util.List;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
-
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.memoria.DAOIndexSort;
-import modelo.Identificable;
-import modelo.ModeloException;
 import modelo.Mundo;
 
 public class MundosDAO implements OperacionesDAO {
@@ -62,12 +57,19 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public Object obtener(String id) throws DatosException {
-		return null;
+		Query query = db.query();
+		query.constrain(Mundo.class);
+		query.descend("nombre").constrain(id);
+		ObjectSet<Mundo> result = query.execute();
+		return result.next();
 	}
 
 	@Override
 	public List obtenerTodos() {
-		return null;
+		Query query = db.query();
+		query.constrain(Mundo.class);
+		ObjectSet<Mundo> result = query.execute();
+		return result;
 	}
 
 	@Override
