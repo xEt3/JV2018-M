@@ -92,14 +92,22 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder resultado = new StringBuilder();
+		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
+		while (res.hasNext()) {
+		resultado.append(res.next());
+		}
+	return resultado.toString();
 	}
 
 	@Override
 	public String listarId() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder resultado = new StringBuilder();
+		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
+		while (res.hasNext()) {
+			resultado.append(res.next().getId());
+		}
+	return resultado.toString();
 	}
 
 	@Override
