@@ -1,12 +1,18 @@
-/** 
+
+/**
  *  Proyecto: Juego de la vida.
  *  Clase-utilidad que adapta el uso de un Calendario para manejo de fechas en el programa.
+ * 	@source: Fecha.java 
  *  @since: prototipo1.1
- *  @source: Fecha.java 
- *  @version: 2.0 - 2019/04/21
- *  @author: ajp
+ *  @version: 2.1 - 2019/05/02
+ *  @author: Grupo Bloque 1
+ * 	@author: Ramon Moñino
+ *  @author: Antonio Ruiz
+ *  @author: Atanas Genchev
+ *  @author: Roberto Bastida
+ *  @author: Ignacio Belmonte
+ *  @author: Ramon Moreno
  */
-
 package util;
 
 import java.io.Serializable;
