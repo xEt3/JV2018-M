@@ -94,8 +94,12 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
-
+		Mundo mundoBD= (Mundo) obtener(((Mundo)obj).getId());
+		Mundo mundoConCambios = (Mundo) obj;
+		mundoBD.setTipoMundo(mundoConCambios.getTipoMundo());
+		mundoBD.setEspacio(mundoConCambios.getEspacio());
+		mundoBD.setDistribucion(mundoConCambios.getDistribucion());
+		db.store(mundoBD);
 	}
 
 	@Override
