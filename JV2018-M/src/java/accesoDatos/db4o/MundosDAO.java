@@ -75,14 +75,14 @@ public class MundosDAO implements OperacionesDAO {
 	@Override
 	public void alta(Object obj) throws DatosException {
 		assert obj != null;
-        Object mundoId = obtener(((Mundo)obj).getId());
-
-        if (mundoId == null) {
-            this.db.store(obj);
-        }
-        else {
-            throw new DatosException("MundosDAO : mundo repetido");
-        }
+		Object mundoId = obtener(((Mundo)obj).getId());
+		
+		if (mundoId == null) {
+			this.db.store(obj);
+		}
+		else {
+			throw new DatosException("MundosDAO: mundo repetido ");
+		}
 	}
 
 	@Override
