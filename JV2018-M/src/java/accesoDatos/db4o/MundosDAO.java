@@ -119,8 +119,10 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-
+		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
+		while (res.hasNext()) {
+			db.delete(res.next());
+		}
 	}
 
 } // class
