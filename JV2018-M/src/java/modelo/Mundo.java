@@ -437,5 +437,13 @@ public class Mundo implements Identificable, Serializable {
 		}
 		return 0;
 	}
+	
+	public byte[][] getEspacio(){
+		return espacio;
+	}
+	
+	public List<Posicion> getDistribucion(){
+		return distribucion;
+	}
 
 } // class
