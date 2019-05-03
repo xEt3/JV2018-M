@@ -15,6 +15,7 @@
 package accesoDatos.db4o;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,6 +39,13 @@ public class testMundosDAO {
 	@Test
 	public void testMundosDAODefecto() {
 		assertNotNull(mundoDAO1);	
+	}
+	
+	@Test
+	public void testBorrarTodos() {
+		StringBuilder result = new StringBuilder("[]");
+		mundoDAO1.borrarTodo();
+		assertEquals(mundoDAO1.obtenerTodos().toString(), result.toString());
 	}
 	
 }
