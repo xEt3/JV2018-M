@@ -14,6 +14,29 @@
 
 package accesoDatos.db4o;
 
+import static org.junit.Assert.assertNotNull;
+
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 public class testMundosDAO {
 
+	private static MundosDAO mundoDAO1;
+	
+	@BeforeAll
+	public static void inicializarDatosFijos() {
+		mundoDAO1 = MundosDAO.getInstance();
+	}
+	
+	@AfterAll
+	public static void limpiarDatosFijos() {
+		mundoDAO1 = null;
+	}
+	
+	@Test
+	public void testMundosDAODefecto() {
+		assertNotNull(mundoDAO1);	
+	}
+	
 }
