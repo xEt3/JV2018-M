@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+
 public class testMundosDAO {
 
 	private static MundosDAO mundoDAO1;
@@ -31,7 +32,7 @@ public class testMundosDAO {
 	
 	@AfterAll
 	public static void limpiarDatosFijos() {
-		mundoDAO1 = null;
+		Conexion.cerrarConexiones();
 	}
 	
 	@Test
