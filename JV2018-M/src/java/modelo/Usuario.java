@@ -3,7 +3,11 @@
  *  @since: prototipo2.0
  *  @source: Usuario.java 
  *  @version: 2.0 - 2019/03/23
- *  @author: ajp
+ *  @author: Grupo 2
+ *  @author: Jose Manuel Ibáñez Sola-Belando
+ *  @author: Javier Muñoz Iniesta
+ *  @author: Nilo Gómez Fernandez
+ *  @author: Juan Carlos Peña Fernández
  */
 
 package modelo;
