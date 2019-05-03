@@ -80,8 +80,9 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public Object baja(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+		ObjectSet<Mundo> res = db.queryByExample(obtener(id));
+	    db.delete(res);
+		return res;
 	}
 
 	@Override
