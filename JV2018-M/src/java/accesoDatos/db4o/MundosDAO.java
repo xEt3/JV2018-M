@@ -23,6 +23,7 @@ import com.db4o.ObjectSet;
 import com.db4o.query.Query;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import modelo.ModeloException;
 import modelo.Mundo;
 
 public class MundosDAO implements OperacionesDAO {
@@ -38,6 +39,7 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	private MundosDAO() {
 		db = Conexion.getInstance();
+		cargarPredeterminados();
 	}
 
 	/**
@@ -131,4 +133,40 @@ public class MundosDAO implements OperacionesDAO {
 		}
 	}
 
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private void cargarPredeterminados() {
+		try {	
+			Mundo mundoDemo = new Mundo();
+			
+			// En este array los 0 indican celdas con célula muerta y los 1 vivas
+			byte[][] espacioDemo =  new byte[][]{ 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
+				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Still Life
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  //
+			};
+			mundoDemo.setEspacio(espacioDemo);
+			mundoDemo.setTipoMundo(Mundo.FormaEspacio.ESFERICO);
+			alta(mundoDemo);
+		} 
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
+	}
 } // class
