@@ -26,95 +26,107 @@ import modelo.SesionUsuario;
 
 public class SesionesDAO implements OperacionesDAO {
 
-    // Singleton.
-    private static SesionesDAO instance;
+	// Singleton.
+	private static SesionesDAO instance;
 
-    // Base de datos
-    private ObjectContainer db;
+	// Base de datos
+	private ObjectContainer db;
 
-    // Constructor
-    private SesionesDAO() {
-        db = Conexion.getInstance();
-    }
+	// Constructor
+	private SesionesDAO() {
+		db = Conexion.getInstance();
+	}
 
-    /**
-     * Método estático de acceso a la instancia única. Si no existe la crea
-     * invocando al constructor interno. Utiliza inicialización diferida. Sólo se
-     * crea una vez; instancia única -patrón singleton-
-     *
-     * @return instance
-     */
-    public static SesionesDAO getInstance() {
-        if (instance == null) {
-            instance = new SesionesDAO();
-        }
-        return instance;
-    }
-    
-    @Override
-    public Object obtener(String id) {
-    	 // TODO OperacionesDAO.baja
-        return null;    
-    }
-    /**
-     * Obtención de la lista de Sesiones almacenadas
-     * @return lista de Sesiones de Usuario
-     */
-    @Override
-    public List obtenerTodos() {
-        Query query = db.query();
-        query.constrain(SesionUsuario.class);
-        ObjectSet<SesionUsuario> result = query.execute();
-        return result;
-    }
+	/**
+	 * Método estático de acceso a la instancia única. Si no existe la crea
+	 * invocando al constructor interno. Utiliza inicialización diferida. Sólo se
+	 * crea una vez; instancia única -patrón singleton-
+	 *
+	 * @return instance
+	 */
+	public static SesionesDAO getInstance() {
+		if (instance == null) {
+			instance = new SesionesDAO();
+		}
+		return instance;
+	}
 
-    /**
-     * Alta de una nueva SesionUsuario.
-     * @param obj - la SesionUsuario a almacenar.
-     * @throws DatosException - si ya existe.
-     */
-    @Override
-    public void alta(Object obj) throws DatosException {
-        assert obj != null;
-        SesionUsuario sesionNueva = (SesionUsuario) obj;
-        ObjectSet<SesionUsuario> sesionesAlmacenadas = db.queryByExample(sesionNueva);
+	/**
+	 * Obtención de la Sesion
+	 * @param id - string con la id de usuario
+	 * @return SesionUsuario si la encuentra
+	 */
+	@Override
+	public SesionUsuario obtener(String id) {
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		query.descend("SesionId").constrain(id);
+		ObjectSet<SesionUsuario> result = query.execute();
+		if (result.hasNext()) {
+			return result.next();
+		}
+		return null;
+	}
 
-        if (sesionesAlmacenadas.next() == null) {
-            db.store(sesionNueva);
-        } else {
-            throw new DatosException("SesionesDAO.alta: " + sesionNueva.getId() + " ya existe");
-        }
-    }
+	/**
+	 * Obtención de la lista de Sesiones almacenadas
+	 * @return lista de Sesiones de Usuario
+	 */
+	@Override
+	public List obtenerTodos() {
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		ObjectSet<SesionUsuario> result = query.execute();
+		return result;
+	}
 
-    @Override
-    public Object baja(String id) throws DatosException {
-        // TODO OperacionesDAO.baja
-        return null;
-    }
+	/**
+	 * Alta de una nueva SesionUsuario.
+	 * @param obj - la SesionUsuario a almacenar.
+	 * @throws DatosException - si ya existe.
+	 */
+	@Override
+	public void alta(Object obj) throws DatosException {
+		assert obj != null;
+		SesionUsuario sesionNueva = (SesionUsuario) obj;
+		ObjectSet<SesionUsuario> sesionesAlmacenadas = db.queryByExample(sesionNueva);
 
-    @Override
-    public void actualizar(Object obj) throws DatosException {
-        // TODO OperacionesDAO.actualizar
+		if (sesionesAlmacenadas.next() == null) {
+			db.store(sesionNueva);
+		} else {
+			throw new DatosException("SesionesDAO.alta: " + sesionNueva.getId() + " ya existe");
+		}
+	}
 
-    }
+	@Override
+	public Object baja(String id) throws DatosException {
+		// TODO OperacionesDAO.baja
+		return null;
+	}
 
-    @Override
-    public String listarDatos() {
-        // TODO OperacionesDAO.listarDatos
-        return null;
-    }
+	@Override
+	public void actualizar(Object obj) throws DatosException {
+		// TODO OperacionesDAO.actualizar
 
-    @Override
-    public String listarId() {
-        // TODO OperacionesDAO.listarId
-        return null;
-    }
+	}
 
-    @Override
-    public void borrarTodo() {
-        // TODO OperacionesDAO.borrarTodo
+	@Override
+	public String listarDatos() {
+		// TODO OperacionesDAO.listarDatos
+		return null;
+	}
 
-    }
+	@Override
+	public String listarId() {
+		// TODO OperacionesDAO.listarId
+		return null;
+	}
+
+	@Override
+	public void borrarTodo() {
+		// TODO OperacionesDAO.borrarTodo
+
+	}
 
 }
 
