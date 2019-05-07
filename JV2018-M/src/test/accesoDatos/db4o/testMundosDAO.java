@@ -17,9 +17,17 @@ package accesoDatos.db4o;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import accesoDatos.DatosException;
+import modelo.ModeloException;
+import modelo.Mundo;
+import modelo.Mundo.FormaEspacio;
 
 
 public class testMundosDAO {
@@ -40,6 +48,19 @@ public class testMundosDAO {
 	public void testMundosDAODefecto() {
 		assertNotNull(mundoDAO1);	
 	}
+	
+	@Test
+	public void testMundosDAOAlta() {
+		try {
+			Mundo mundo = new Mundo("Demo1", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo);
+			assertEquals(mundoDAO1.obtener(mundo.getId()), mundo);
+		} 
+		catch (DatosException | ModeloException e) {
+		}
+		
+	}
+	
 	
 	@Test
 	public void testBorrarTodos() {
