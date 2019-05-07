@@ -69,4 +69,15 @@ public class testMundosDAO {
 		assertEquals(mundoDAO1.obtenerTodos().toString(), result.toString());
 	}
 	
+	@Test
+	public void testObtenerTodos(){
+		try {
+			mundoDAO1.alta(new Mundo("Demo9",new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO));
+		} 
+		catch (DatosException | ModeloException e) {
+		}
+		assertNotNull(mundoDAO1.obtenerTodos());
+	}
+	
+	
 }
