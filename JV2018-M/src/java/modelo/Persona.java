@@ -3,7 +3,9 @@
  *  @since: prototipo2.0
  *  @source: Persona.java 
  *  @version: 2.0 - 2019/03/23 
- *  @author: ajp
+ *  @author: Grupo 1
+ *  @author: Miguel Fernández Piñero (MiguelFerPi)
+ *  @author: Jesús Pérez Robles (jebles)
  */
 
 package modelo;

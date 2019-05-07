@@ -59,8 +59,10 @@ public class Conexion {
 	/**
 	 * Cierra conexion.
 	 */
-	public void cerrarConexiones() {
-		db.close();
+	public static void cerrarConexiones() {
+		if (db != null) {
+			db.close();
+		}
 	}
 
 } // class

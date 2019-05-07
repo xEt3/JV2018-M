@@ -6,8 +6,10 @@
  * Colabora en el patrón Façade.
  * @since: prototipo2.0
  * @source: SesionesDAO.java 
- * @version: 2.0 - 2019/03/25 
- * @author: ajp
+ * @author: Grupo 1
+ * @author: Miguel Fernández Piñero (MiguelFerPi)
+ * @author: Jesús Pérez Robles (jebles)
+ * @version: 2.1 - 2019.5.3 
  */
 
 package accesoDatos.fichero;
