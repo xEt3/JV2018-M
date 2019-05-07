@@ -15,6 +15,7 @@
 package accesoDatos.db4o;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
@@ -60,7 +61,21 @@ public class testMundosDAO {
 		}
 		
 	}
-	
+	@Test
+	public void testObtener() {
+		try {
+			Mundo mundoObtener = new Mundo("MundoObtener",
+											new byte[20][20], 
+											new LinkedList<>(), 
+											new HashMap<>(),
+											FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundoObtener);
+			assertSame(mundoDAO1.obtener("MundoObtener"), mundoObtener);
+		} 
+		catch (DatosException | ModeloException e) {
+			
+		}
+	}
 	
 	@Test
 	public void testBorrarTodos() {
