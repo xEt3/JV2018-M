@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
@@ -49,17 +50,30 @@ public class SesionesDAO implements OperacionesDAO {
 		}
 		return instance;
 	}
-
+	/**
+	 * Obtención de la Sesion
+	 * @param id - string con la id de usuario
+	 * @throws DatosException - si no la encuentra	 
+	 * @return sesionUsuario encontrada 
+	 */
 	@Override
 	public Object obtener(String id) throws DatosException {
-		// TODO OperacionesDAO.obtener
-		return null;
+		Query query = db.query();
+	    query.constrain(SesionUsuario.class);
+	    query.descend("Id").constrain(id);
+	    ObjectSet<SesionUsuario> result = query.execute();
+		return result.next();
 	}
-
+	/**
+	 * Obtención de la lista de Sesiones almacenadas
+	 * @return lista de Sesiones de Usuario
+	 */
 	@Override
 	public List obtenerTodos() {
-		// TODO OperacionesDAO.obtenerTodos
-		return null;
+		 Query query = db.query();
+		    query.constrain(SesionUsuario.class);
+		    ObjectSet<SesionUsuario> result = query.execute();
+		return result;
 	}
 
 	/**
