@@ -1,4 +1,4 @@
-/** 
+/**
  * Proyecto: Juego de la vida.
  * Resuelve todos los aspectos del almacenamiento del DTO Patron utilizando un ArrayList.
  * Aplica el patron Singleton.
@@ -18,6 +18,7 @@ import java.util.List;
 
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
@@ -40,7 +41,7 @@ public class SesionesDAO implements OperacionesDAO {
 	 * Método estático de acceso a la instancia única. Si no existe la crea
 	 * invocando al constructor interno. Utiliza inicialización diferida. Sólo se
 	 * crea una vez; instancia única -patrón singleton-
-	 * 
+	 *
 	 * @return instance
 	 */
 	public static SesionesDAO getInstance() {
@@ -50,20 +51,37 @@ public class SesionesDAO implements OperacionesDAO {
 		return instance;
 	}
 
+	/**
+	 * Obtención de la Sesion
+	 * @param id - string con la id de usuario
+	 * @return SesionUsuario si la encuentra
+	 */
 	@Override
-	public Object obtener(String id) throws DatosException {
-		// TODO OperacionesDAO.obtener
-		return null;
-	}
-
-	@Override
-	public List obtenerTodos() {
-		// TODO OperacionesDAO.obtenerTodos
+	public SesionUsuario obtener(String id) {
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		query.descend("SesionId").constrain(id);
+		ObjectSet<SesionUsuario> result = query.execute();
+		if (result.hasNext()) {
+			return result.next();
+		}
 		return null;
 	}
 
 	/**
-	 * Alta de una nueva SesionUsuario. 
+	 * Obtención de la lista de Sesiones almacenadas
+	 * @return lista de Sesiones de Usuario
+	 */
+	@Override
+	public List obtenerTodos() {
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		ObjectSet<SesionUsuario> result = query.execute();
+		return result;
+	}
+
+	/**
+	 * Alta de una nueva SesionUsuario.
 	 * @param obj - la SesionUsuario a almacenar.
 	 * @throws DatosException - si ya existe.
 	 */
@@ -111,3 +129,7 @@ public class SesionesDAO implements OperacionesDAO {
 	}
 
 }
+
+
+
+
