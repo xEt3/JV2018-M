@@ -20,9 +20,13 @@ package accesoDatos.db4o;
 import java.util.List;
 
 import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import modelo.Mundo;
+import modelo.Usuario;
 
 
 public class UsuariosDAO implements OperacionesDAO {
@@ -53,8 +57,10 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	@Override
 	public List obtenerTodos() {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+		query.constrain(Usuario.class);
+		ObjectSet<Usuario> result = query.execute();
+		return result;
 	}
 
 	@Override
