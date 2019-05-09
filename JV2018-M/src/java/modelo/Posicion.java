@@ -3,8 +3,10 @@
  * Coordenada de una celda del espacio según el modelo2
  * @since: prototipo1.2
  * @source: Posicion.java 
- * @version: 2.0 - 2019.03.25
- * @author: ajp
+ * @version: 2.1 - 2019.05.02
+ * @author: Grupo 1
+ * @author: Miguel Fernández Piñero (MiguelFerPi)
+ * @author: Jesús Pérez Robles (jebles)
  */
 
 package modelo;

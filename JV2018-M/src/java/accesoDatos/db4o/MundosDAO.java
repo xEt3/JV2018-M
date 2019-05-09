@@ -74,8 +74,15 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void alta(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
-
+		assert obj != null;
+		Object mundoId = obtener(((Mundo)obj).getId());
+		
+		if (mundoId == null) {
+			this.db.store(obj);
+		}
+		else {
+			throw new DatosException("MundosDAO: mundo repetido ");
+		}
 	}
 
 	@Override
@@ -86,8 +93,12 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
-
+		Mundo mundoBD= (Mundo) obtener(((Mundo)obj).getId());
+		Mundo mundoConCambios = (Mundo) obj;
+		mundoBD.setTipoMundo(mundoConCambios.getTipoMundo());
+		mundoBD.setEspacio(mundoConCambios.getEspacio());
+		mundoBD.setDistribucion(mundoConCambios.getDistribucion());
+		db.store(mundoBD);
 	}
 
 	@Override
@@ -112,8 +123,10 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-
+		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
+		while (res.hasNext()) {
+			db.delete(res.next());
+		}
 	}
 
 } // class
