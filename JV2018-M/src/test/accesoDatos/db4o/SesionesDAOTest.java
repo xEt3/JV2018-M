@@ -22,15 +22,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import accesoDatos.db4o.SesionesDAO;
-import modelo.SesionUsuario;
+import modelo.*;
 import modelo.SesionUsuario.EstadoSesion;
-import modelo.Usuario;
-import util.Fecha;
+import modelo.Usuario.RolUsuario;
+import util.*;
 
 public class SesionesDAOTest {
 
-	private static SesionUsuario sesion1;
-	private static SesionUsuario sesion2;
+	private Usuario usuario1;
+	private Usuario usuario2;
+	private Usuario usuario3;
+	private SesionUsuario sesion1;
+	private SesionUsuario sesion2;
+	private SesionUsuario sesion3;
 	private SesionesDAO sesionesDAO;
 
 	/**
@@ -42,8 +46,13 @@ public class SesionesDAOTest {
 		try {
 			sesionesDAO = SesionesDAO.getInstance();
 			sesionesDAO.borrarTodo();
-			sesion1 = new SesionUsuario(new Usuario(), new Fecha(2019, 3, 1), EstadoSesion.ACTIVA);
-			sesion2 = new SesionUsuario(new Usuario(), new Fecha(2019, 3, 2), EstadoSesion.ACTIVA);
+			usuario1 = new Usuario();
+			usuario2 = new Usuario();
+			usuario3 = new Usuario(new Nif("00000002W"), "Perico", "Pérez López", new DireccionPostal(), new Correo(),
+					new Fecha(1980, 10, 1), new Fecha(), new ClaveAcceso("Miau#2"), RolUsuario.NORMAL);
+			sesion1 = new SesionUsuario(usuario1, new Fecha(2019, 3, 1), EstadoSesion.ACTIVA);
+			sesion2 = new SesionUsuario(usuario2, new Fecha(2019, 3, 2), EstadoSesion.ACTIVA);
+			sesion3 = new SesionUsuario(usuario3, new Fecha(2019, 3, 3), EstadoSesion.ACTIVA);
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			fail(e.toString());
@@ -67,10 +76,12 @@ public class SesionesDAOTest {
 		try {
 			sesionesDAO.alta(sesion1);
 			sesionesDAO.alta(sesion2);
+			sesionesDAO.alta(sesion3);
 			List<SesionUsuario> todasSesiones = sesionesDAO.obtenerTodos();
 
 			assertEquals(sesion1, todasSesiones.get(0));
 			assertEquals(sesion2, todasSesiones.get(1));
+			assertEquals(sesion3, todasSesiones.get(2));
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			fail(e.toString());

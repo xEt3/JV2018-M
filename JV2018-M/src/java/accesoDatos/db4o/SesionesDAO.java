@@ -19,6 +19,7 @@ import java.util.List;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Predicate;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
@@ -73,7 +74,20 @@ public class SesionesDAO implements OperacionesDAO {
 		return null;
 	}
 
-  /**
+	/**
+	 * Obtención de la lista de Sesiones almacenadas
+	 * 
+	 * @return lista de Sesiones de Usuario
+	 */
+	@Override
+	public List obtenerTodos() {
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		ObjectSet<SesionUsuario> result = query.execute();
+		return result;
+	}
+
+	/**
 	 * Alta de una nueva SesionUsuario.
 	 * 
 	 * @param obj - la SesionUsuario a almacenar.
@@ -85,7 +99,7 @@ public class SesionesDAO implements OperacionesDAO {
 		SesionUsuario sesionNueva = (SesionUsuario) obj;
 		ObjectSet<SesionUsuario> sesionesAlmacenadas = db.queryByExample(sesionNueva);
 
-		if (sesionesAlmacenadas.next() == null) {
+		if (!sesionesAlmacenadas.hasNext()) {
 			db.store(sesionNueva);
 		} else {
 			throw new DatosException("SesionesDAO.alta: " + sesionNueva.getId() + " ya existe");
