@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -34,7 +35,7 @@ import modelo.Mundo;
 import modelo.Mundo.FormaEspacio;
 
 
-public class testMundosDAO {
+public class MundosDAOTest {
 
 	private static MundosDAO mundoDAO1;
 	
@@ -114,6 +115,24 @@ public class testMundosDAO {
 			Mundo mundo2 = new Mundo("Demo321", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
 			mundoDAO1.alta(mundo2);
 			assertEquals(mundoDAO1.listarId(),"Demo123\nDemo321\n");
+		} catch (DatosException | ModeloException e) {
+			fail("No debe llegar aquí...");
+		}
+	}
+	
+	@Test
+	public void testListarDatos() {
+		try {
+			Mundo mundo1 = new Mundo("Demo123", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo1);
+			Mundo mundo2 = new Mundo("Demo321", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo2);
+			List mundos = mundoDAO1.obtenerTodos();
+			StringBuilder mundosAMostrar = new StringBuilder();
+			for (int i = 0; i < mundos.size(); i++) {
+				mundosAMostrar.append(mundos.get(i)).append("\n");
+			}
+			assertEquals(mundoDAO1.listarDatos(),mundosAMostrar.toString());
 		} catch (DatosException | ModeloException e) {
 			fail("No debe llegar aquí...");
 		}
