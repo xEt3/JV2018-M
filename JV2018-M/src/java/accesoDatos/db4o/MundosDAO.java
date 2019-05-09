@@ -110,7 +110,7 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-			resultado.append(res.next());
+			resultado.append(res.next()).append("\n");
 		}
 		return resultado.toString();
 	}
@@ -120,7 +120,7 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-			resultado.append(res.next().getId());
+			resultado.append(res.next().getId()).append("\n");
 		}
 		return resultado.toString();
 	}
