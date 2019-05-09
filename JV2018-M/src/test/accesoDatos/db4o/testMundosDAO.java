@@ -15,6 +15,7 @@
 package accesoDatos.db4o;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -61,6 +62,20 @@ public class testMundosDAO {
 		}
 		
 	}
+	
+	@Test
+	public void testMundosDAOBaja() {
+		try {
+			Mundo mundo = new Mundo("Demo2", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo);
+			mundoDAO1.baja(mundo.getId());
+			assertNull(mundoDAO1.obtener(mundo.getId()));
+		} 
+		catch (DatosException | ModeloException e) {
+		}
+		
+	}
+	
 	@Test
 	public void testObtener() {
 		try {
