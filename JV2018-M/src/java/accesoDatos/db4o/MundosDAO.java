@@ -25,6 +25,7 @@ import com.db4o.query.Query;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.Mundo;
+import modelo.ModeloException;
 
 public class MundosDAO implements OperacionesDAO {
 
@@ -165,7 +166,7 @@ public class MundosDAO implements OperacionesDAO {
 			mundoDemo.setTipoMundo(Mundo.FormaEspacio.ESFERICO);
 			alta(mundoDemo);
 		} 
-		catch (Exception e) {
+		catch (DatosException | ModeloException e) {
 			e.printStackTrace();
 		}
 	}
