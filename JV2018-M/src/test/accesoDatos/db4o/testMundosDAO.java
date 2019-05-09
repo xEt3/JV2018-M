@@ -24,6 +24,7 @@ import java.util.LinkedList;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import accesoDatos.DatosException;
@@ -44,6 +45,11 @@ public class testMundosDAO {
 	@AfterAll
 	public static void limpiarDatosFijos() {
 		Conexion.cerrarConexiones();
+	}
+	
+	@BeforeEach
+	public void borrarDatosFijos() {
+		mundoDAO1.borrarTodo();
 	}
 	
 	@Test
