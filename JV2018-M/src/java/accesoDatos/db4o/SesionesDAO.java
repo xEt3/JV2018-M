@@ -53,6 +53,7 @@ public class SesionesDAO implements OperacionesDAO {
 
 	/**
 	 * Obtención de la Sesion
+	 * 
 	 * @param id - string con la id de usuario
 	 * @return SesionUsuario si la encuentra
 	 */
@@ -70,6 +71,7 @@ public class SesionesDAO implements OperacionesDAO {
 
 	/**
 	 * Obtención de la lista de Sesiones almacenadas
+	 * 
 	 * @return lista de Sesiones de Usuario
 	 */
 	@Override
@@ -82,6 +84,7 @@ public class SesionesDAO implements OperacionesDAO {
 
 	/**
 	 * Alta de una nueva SesionUsuario.
+	 * 
 	 * @param obj - la SesionUsuario a almacenar.
 	 * @throws DatosException - si ya existe.
 	 */
@@ -122,14 +125,18 @@ public class SesionesDAO implements OperacionesDAO {
 		return null;
 	}
 
+	/**
+	 * Elimina todas los objetos SesionUsuario en la base de datos.
+	 */
 	@Override
 	public void borrarTodo() {
-		// TODO OperacionesDAO.borrarTodo
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		ObjectSet<SesionUsuario> result = query.execute();
 
+		while (result.hasNext()) {
+			db.delete(result.next());
+		}
 	}
 
 }
-
-
-
-
