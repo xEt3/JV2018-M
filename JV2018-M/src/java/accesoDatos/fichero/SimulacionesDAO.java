@@ -39,7 +39,7 @@ public class SimulacionesDAO extends DAOIndexSort implements OperacionesDAO, Per
 	private static SimulacionesDAO instance;
 
 	// Elemento de almacenamiento.
-	private ArrayList <Identificable> datosSimulaciones;
+	private List<Identificable> datosSimulaciones;
 	private File fSimulaciones;
 
 	/**
@@ -62,9 +62,8 @@ public class SimulacionesDAO extends DAOIndexSort implements OperacionesDAO, Per
 	 *  Utiliza inicialización diferida.
 	 *  Sólo se crea una vez; instancia única -patrón singleton-
 	 *  @return instancia
-	 * @throws DatosException 
 	 */
-	public static SimulacionesDAO getInstance() throws DatosException {
+	public static SimulacionesDAO getInstance() {
 		if (instance == null) {
 			instance = new SimulacionesDAO();
 		}
@@ -100,7 +99,7 @@ public class SimulacionesDAO extends DAOIndexSort implements OperacionesDAO, Per
 			try {
 				FileInputStream fisSimulaciones = new FileInputStream(fSimulaciones);
 				ObjectInputStream oisSimulaciones = new ObjectInputStream(fisSimulaciones);
-				datosSimulaciones = (ArrayList<Identificable>) oisSimulaciones.readObject();
+				datosSimulaciones = (List<Identificable>) oisSimulaciones.readObject();
 				oisSimulaciones.close();
 				return;
 			}
@@ -158,11 +157,15 @@ public class SimulacionesDAO extends DAOIndexSort implements OperacionesDAO, Per
 	 * Búsqueda de todas la simulaciones de un usuario.
 	 * @param idUsr - el identificador de usuario a buscar.
 	 * @return - Sublista con las simulaciones encontrada; null si no existe ninguna.
-	 * @throws ModeloException 
 	 */
-	public List<Identificable> obtenerTodosMismoUsr(String idUsr) throws ModeloException {
+	public List<Identificable> obtenerTodasMismoUsr(String idUsr) {
 		Simulacion aux = null;
-		aux = new Simulacion();
+		try {
+			aux = new Simulacion();
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		aux.setUsr(UsuariosDAO.getInstance().obtener(idUsr));
 		//Busca posición inserción ordenada por idUsr + fecha. La última para el mismo usuario.
 		return separarSimulacionesUsr(indexSort(aux.getId(), datosSimulaciones) - 1);
