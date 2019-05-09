@@ -18,12 +18,33 @@ package accesoDatos.db4o;
 
 
 import java.util.List;
+
+import com.db4o.ObjectContainer;
+
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 
 
 public class UsuariosDAO implements OperacionesDAO {
-
+	
+	//Singleton.
+	private static UsuariosDAO instance;
+	
+	//Base de Datos.
+	private ObjectContainer db;
+	
+	//Constructor.
+	private UsuariosDAO() {
+		db = Conexion.getInstance();
+	}
+	
+	public static UsuariosDAO getInstance() {
+		if (instance == null) {
+			instance = new UsuariosDAO();
+		}
+		return instance;
+	}
+	
 	@Override
 	public Object obtener(String id) throws DatosException {
 		// TODO Auto-generated method stub
@@ -39,7 +60,7 @@ public class UsuariosDAO implements OperacionesDAO {
 	@Override
 	public void alta(Object obj) throws DatosException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -51,7 +72,7 @@ public class UsuariosDAO implements OperacionesDAO {
 	@Override
 	public void actualizar(Object obj) throws DatosException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public String toStringDatos() {
@@ -67,7 +88,7 @@ public class UsuariosDAO implements OperacionesDAO {
 	@Override
 	public void borrarTodo() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -81,5 +102,5 @@ public class UsuariosDAO implements OperacionesDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 } //class
