@@ -12,7 +12,7 @@
  * @author: Jose Miguel Hernandez Rodriguez
  */
 
-package accesoDatos.fichero;
+package accesoDatos.db4o;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
