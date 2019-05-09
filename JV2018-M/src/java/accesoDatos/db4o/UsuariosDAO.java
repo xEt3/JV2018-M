@@ -25,7 +25,6 @@ import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import modelo.Mundo;
 import modelo.Usuario;
 
 
