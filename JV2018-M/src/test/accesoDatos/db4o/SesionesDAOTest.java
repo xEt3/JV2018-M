@@ -14,6 +14,7 @@ package accesoDatos.db4o;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 import java.util.List;
@@ -83,6 +84,32 @@ public class SesionesDAOTest {
 			assertEquals(sesion2, todasSesiones.get(1));
 			assertEquals(sesion3, todasSesiones.get(2));
 		} catch (Exception e) {
+			System.out.println(e.toString());
+			fail(e.toString());
+		}
+	}
+	@Test
+	public void testActualizar() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesion1.setFecha(sesion2.getFecha());
+			sesionesDAO.actualizar(sesion1);			
+			assertEquals(sesionesDAO.obtener(sesion1.getId()).getFecha(), sesion2.getFecha());
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			fail(e.toString());
+		}
+	}
+	@Test
+	public void testBaja() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesionesDAO.alta(sesion2);
+			String id = sesion2.getId();			
+			sesionesDAO.baja(id);
+			assertNull(sesionesDAO.obtener(sesion2.getId()));
+
+		} catch (Exception e){
 			System.out.println(e.toString());
 			fail(e.toString());
 		}
