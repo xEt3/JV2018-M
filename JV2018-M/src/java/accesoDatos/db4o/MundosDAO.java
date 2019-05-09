@@ -56,7 +56,7 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Object obtener(String id) throws DatosException {
+	public Mundo obtener(String id) {
 		Query query = db.query();
 		query.constrain(Mundo.class);
 		query.descend("nombre").constrain(id);
@@ -86,10 +86,9 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Object baja(String id) throws DatosException {
-		ObjectSet<Mundo> res = db.queryByExample(obtener(id));
-	    db.delete(res);
-		return res;
+	public Mundo baja(String id) throws DatosException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
