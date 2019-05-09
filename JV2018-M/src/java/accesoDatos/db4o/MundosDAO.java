@@ -91,7 +91,7 @@ public class MundosDAO implements OperacionesDAO {
 	@Override
 	public Object baja(String id) throws DatosException {
 		ObjectSet<Mundo> res = db.queryByExample(obtener(id));
-		db.delete(res);
+		db.delete(res.next());
 		return res;
 	}
 
