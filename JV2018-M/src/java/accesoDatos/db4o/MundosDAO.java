@@ -17,13 +17,13 @@
 
 package accesoDatos.db4o;
 
+
 import java.util.List;
 import com.db4o.ObjectContainer;
 import com.db4o.ObjectSet;
 import com.db4o.query.Query;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import modelo.ModeloException;
 import modelo.Mundo;
 
 public class MundosDAO implements OperacionesDAO {
@@ -39,7 +39,6 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	private MundosDAO() {
 		db = Conexion.getInstance();
-		cargarPredeterminados();
 	}
 
 	/**
@@ -57,7 +56,7 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Mundo obtener(String id) throws DatosException {
+	public Mundo obtener(String id) {
 		Query query = db.query();
 		query.constrain(Mundo.class);
 		query.descend("nombre").constrain(id);
@@ -79,11 +78,12 @@ public class MundosDAO implements OperacionesDAO {
 	@Override
 	public void alta(Object obj) throws DatosException {
 		assert obj != null;
-		Object mundoId = obtener(((Mundo) obj).getId());
-
+		Object mundoId = obtener(((Mundo)obj).getId());
+		
 		if (mundoId == null) {
 			this.db.store(obj);
-		} else {
+		}
+		else {
 			throw new DatosException("MundosDAO: mundo repetido ");
 		}
 	}
@@ -97,7 +97,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		Mundo mundoBD = (Mundo) obtener(((Mundo) obj).getId());
+		Mundo mundoBD= (Mundo) obtener(((Mundo)obj).getId());
 		Mundo mundoConCambios = (Mundo) obj;
 		mundoBD.setTipoMundo(mundoConCambios.getTipoMundo());
 		mundoBD.setEspacio(mundoConCambios.getEspacio());
@@ -110,9 +110,9 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-			resultado.append(res.next()).append("\n");
+		resultado.append(res.next());
 		}
-		return resultado.toString();
+	return resultado.toString();
 	}
 
 	@Override
@@ -120,9 +120,9 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-			resultado.append(res.next().getId()).append("\n");
+			resultado.append(res.next().getId());
 		}
-		return resultado.toString();
+	return resultado.toString();
 	}
 
 	@Override
@@ -133,40 +133,4 @@ public class MundosDAO implements OperacionesDAO {
 		}
 	}
 
-	/**
-	 *  Método para generar de datos predeterminados.
-	 */
-	private void cargarPredeterminados() {
-		try {	
-			Mundo mundoDemo = new Mundo();
-			
-			// En este array los 0 indican celdas con célula muerta y los 1 vivas
-			byte[][] espacioDemo =  new byte[][]{ 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
-				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Still Life
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  //
-			};
-			mundoDemo.setEspacio(espacioDemo);
-			mundoDemo.setTipoMundo(Mundo.FormaEspacio.ESFERICO);
-			alta(mundoDemo);
-		} 
-		catch (DatosException | ModeloException e) {
-			e.printStackTrace();
-		}
-	}
 } // class
