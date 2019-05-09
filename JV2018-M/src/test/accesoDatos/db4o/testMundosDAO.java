@@ -17,6 +17,7 @@ package accesoDatos.db4o;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.LinkedList;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import accesoDatos.DatosException;
@@ -44,6 +46,11 @@ public class testMundosDAO {
 	@AfterAll
 	public static void limpiarDatosFijos() {
 		Conexion.cerrarConexiones();
+	}
+	
+	@BeforeEach
+	public void borrarDatosFijos() {
+		mundoDAO1.borrarTodo();
 	}
 	
 	@Test
@@ -97,6 +104,19 @@ public class testMundosDAO {
 		StringBuilder result = new StringBuilder("[]");
 		mundoDAO1.borrarTodo();
 		assertEquals(mundoDAO1.obtenerTodos().toString(), result.toString());
+	}
+	
+	@Test
+	public void testListarId() {
+		try {
+			Mundo mundo1 = new Mundo("Demo123", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo1);
+			Mundo mundo2 = new Mundo("Demo321", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+			mundoDAO1.alta(mundo2);
+			assertEquals(mundoDAO1.listarId(),"Demo123\nDemo321\n");
+		} catch (DatosException | ModeloException e) {
+			fail("No debe llegar aquí...");
+		}
 	}
 	
 	@Test
