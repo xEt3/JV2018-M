@@ -1,53 +1,18 @@
 /** 
-Proyecto: Juego de la vida.
- * Implementa el control de inicio de sesión 
- * y ejecución de la simulación por defecto. 
+ * Proyecto: Juego de la vida.
+ * Implementación del control de inicio de sesión y ejecución de la simulación por defecto. 
  * @since: prototipo1.0
  * @source: JVPrincipal.java 
- * @version: 2.1 - 2019/04/11
- * @author: Grupo 0
+ * @version: 2.1 - 2019/05/06
  * @author: ajp
  */
 
-import accesoDatos.Datos;
-import accesoUsr.Presentacion;
-import modelo.SesionUsuario;
+import accesoUsr.consola.control.ControlPrincipal;
 
 public class JVPrincipal {
 
-	private Datos datos;
-	private Presentacion interfazUsr;
+	public static void main(String[] args) {		
+		new ControlPrincipal();
+	}
 	
-	/**
-	 * Secuencia principal del programa.
-	 * @throws Exception 
-	 */
-	public static void main(String[] args) {				
-		try {
-			JVPrincipal jv = new JVPrincipal();
-			jv.datos = new Datos();
-			jv.interfazUsr = new Presentacion();		
-			System.out.println(jv.datos.toStringDatosUsuarios());
-				
-				if (jv.interfazUsr.inicioSesionCorrecto()) {	
-					SesionUsuario sesion = new SesionUsuario();
-					sesion.setUsr(jv.interfazUsr.getUsrEnSesion());  
-					jv.datos.altaSesion(sesion);
-								
-					System.out.println("Sesión: " + jv.datos.getSesionesRegistradas() + '\n' + "Iniciada por: " 
-							+ 	jv.interfazUsr.getUsrEnSesion().getNombre() + " " 
-							+ jv.interfazUsr.getUsrEnSesion().getApellidos());			
-					jv.interfazUsr.mostrarSimulacion();
-				}
-				else {
-					System.out.println("\nDemasiados intentos fallidos...");
-				}		
-				jv.datos.cerrar();
-				System.out.println("Fin del programa.");
-		} 
-		catch (Exception e) {
-			e.printStackTrace();
-		} 
-	} 
-
 } //class

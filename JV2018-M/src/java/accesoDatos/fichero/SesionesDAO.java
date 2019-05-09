@@ -137,11 +137,16 @@ public class SesionesDAO extends DAOIndexSort implements OperacionesDAO, Persist
 	 * @param idUsr - el identificador de usuario a buscar.
 	 * @return - Sublista con las sesiones encontrada.
 	 * @throws ModeloException 
-	 * @throws DatosException - si no existe ninguna.
 	 */
-	public List<Identificable> obtenerTodosMismoUsr(String idUsr) throws ModeloException {
+	public List<Identificable> obtenerTodasMismoUsr(String idUsr) {
 		assert idUsr != null;
-		SesionUsuario aux = new SesionUsuario();
+		SesionUsuario aux = null;
+		try {
+			aux = new SesionUsuario();
+		} 
+		catch (ModeloException e) {
+			e.printStackTrace();
+		}
 		aux.setUsr(UsuariosDAO.getInstance().obtener(idUsr));
 		//Busca posición inserción ordenada por idUsr + fecha. La última para el mismo usuario.
 		return separarSesionesUsr(indexSort(aux.getId(), datosSesiones) - 1);
