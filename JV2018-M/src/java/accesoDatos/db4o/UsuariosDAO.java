@@ -20,9 +20,12 @@ package accesoDatos.db4o;
 import java.util.List;
 
 import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
+import modelo.Usuario;
 
 
 public class UsuariosDAO implements OperacionesDAO {
@@ -76,13 +79,19 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 
 	public String toStringDatos() {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+	    query.constrain(Usuario.class);
+	    query.descend("Usuario").constraints(); 
+	    ObjectSet result = query.execute();
+	    return result.toString();
 	}
 
 	public String toStringId() {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+	    query.constrain(Usuario.class);
+	    query.descend("id").constraints(); 
+	    ObjectSet<Usuario> result = query.execute();
+	    return result.toString();
 	}
 
 	@Override
