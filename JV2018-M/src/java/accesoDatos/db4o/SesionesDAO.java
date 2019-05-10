@@ -105,17 +105,38 @@ public class SesionesDAO implements OperacionesDAO {
 			throw new DatosException("SesionesDAO.alta: " + sesionNueva.getId() + " ya existe");
 		}
 	}
-
+	/**
+	 * Baja de una sesion existente
+	 * @param id de la sesion
+	 * @throws DatosException - si no la encuentra
+	 */
 	@Override
 	public Object baja(String id) throws DatosException {
-		// TODO OperacionesDAO.baja
-		return null;
+		assert id != null;
+		SesionUsuario sesionBD = obtener(id);
+		if (sesionBD != null) {
+			db.delete(sesionBD);
+			return sesionBD;
+		}
+		else {
+			throw new DatosException("SesionesDAO.baja: "+ id + " no existe");
+		}
 	}
 
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO OperacionesDAO.actualizar
-
+		assert obj != null;
+		SesionUsuario sesionBD = obtener(((SesionUsuario) obj).getId());
+		SesionUsuario sesionRef = (SesionUsuario) obj;
+		if (sesionBD != null) {
+			sesionBD.setEstado(sesionRef.getEstado());
+			sesionBD.setFecha(sesionRef.getFecha());
+			sesionBD.setUsr(sesionRef.getUsr());
+			db.store(sesionBD);
+		} 
+		else {
+			throw new DatosException("SesionesDAO.actualizar: sesion no encontrada");
+		}
 	}
 
 	@Override
