@@ -25,6 +25,7 @@ import com.db4o.query.Query;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.Mundo;
+import modelo.ModeloException;
 
 public class MundosDAO implements OperacionesDAO {
 
@@ -61,7 +62,10 @@ public class MundosDAO implements OperacionesDAO {
 		query.constrain(Mundo.class);
 		query.descend("nombre").constrain(id);
 		ObjectSet<Mundo> result = query.execute();
-		return result.next();
+		if (!result.isEmpty()) {
+			return result.next();
+		}
+		return null;
 	}
 
 	@Override
@@ -87,8 +91,9 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public Mundo baja(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+		ObjectSet<Mundo> res = db.queryByExample(obtener(id));
+		db.delete(res.next());
+		return (Mundo) res;
 	}
 
 	@Override
@@ -106,9 +111,9 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-		resultado.append(res.next());
+			resultado.append(res.next()).append("\n");
 		}
-	return resultado.toString();
+		return resultado.toString();
 	}
 
 	@Override
@@ -116,9 +121,9 @@ public class MundosDAO implements OperacionesDAO {
 		StringBuilder resultado = new StringBuilder();
 		ObjectSet<Mundo> res = db.queryByExample(Mundo.class);
 		while (res.hasNext()) {
-			resultado.append(res.next().getId());
+			resultado.append(res.next().getId()).append("\n");
 		}
-	return resultado.toString();
+		return resultado.toString();
 	}
 
 	@Override
@@ -128,5 +133,44 @@ public class MundosDAO implements OperacionesDAO {
 			db.delete(res.next());
 		}
 	}
+	
+	/**
+	 *  Método para generar de datos predeterminados.
+	 */
+	private void cargarPredeterminados() {
+		try {	
+			Mundo mundoDemo = new Mundo();
+
+			// En este array los 0 indican celdas con célula muerta y los 1 vivas
+			byte[][] espacioDemo =  new byte[][]{ 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
+				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
+				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Still Life
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  //
+			};
+			mundoDemo.setEspacio(espacioDemo);
+			mundoDemo.setTipoMundo(Mundo.FormaEspacio.ESFERICO);
+			alta(mundoDemo);
+		} 
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 
 } // class
