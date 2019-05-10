@@ -34,6 +34,7 @@ public class SesionesDAOTest {
 	private Usuario usuario2;
 	private Usuario usuario3;
 	private SesionUsuario sesion1;
+	private SesionUsuario sesion1_2;
 	private SesionUsuario sesion2;
 	private SesionUsuario sesion3;
 	private SesionesDAO sesionesDAO;
@@ -48,14 +49,15 @@ public class SesionesDAOTest {
 			sesionesDAO = SesionesDAO.getInstance();
 			sesionesDAO.borrarTodo();
 			usuario1 = new Usuario();
-			usuario2 = new Usuario();
-			usuario3 = new Usuario(new Nif("00000002W"), "Perico", "Pérez López", new DireccionPostal(), new Correo(),
+			usuario2 = new Usuario(new Nif("00000002W"), "Perico", "Pérez López", new DireccionPostal(), new Correo(),
 					new Fecha(1980, 10, 1), new Fecha(), new ClaveAcceso("Miau#2"), RolUsuario.NORMAL);
+			usuario3 = new Usuario(new Nif("00000003A"), "Andrés", "Armando Carreras", new DireccionPostal(),
+					new Correo(), new Fecha(1980, 11, 1), new Fecha(), new ClaveAcceso("Miau#3"), RolUsuario.NORMAL);
 			sesion1 = new SesionUsuario(usuario1, new Fecha(2019, 3, 1), EstadoSesion.ACTIVA);
+			sesion1_2 = new SesionUsuario(usuario1, new Fecha(2019, 3, 2), EstadoSesion.ACTIVA);
 			sesion2 = new SesionUsuario(usuario2, new Fecha(2019, 3, 2), EstadoSesion.ACTIVA);
 			sesion3 = new SesionUsuario(usuario3, new Fecha(2019, 3, 3), EstadoSesion.ACTIVA);
 		} catch (Exception e) {
-			System.out.println(e.toString());
 			fail(e.toString());
 		}
 	}
@@ -65,9 +67,9 @@ public class SesionesDAOTest {
 		try {
 			sesionesDAO.alta(sesion1);
 			SesionUsuario sesion = sesionesDAO.obtener(sesion1.getId());
+
 			assertSame(sesion1, sesion);
 		} catch (Exception e) {
-			e.printStackTrace();
 			fail(e.toString());
 		}
 	}
@@ -84,33 +86,56 @@ public class SesionesDAOTest {
 			assertEquals(sesion2, todasSesiones.get(1));
 			assertEquals(sesion3, todasSesiones.get(2));
 		} catch (Exception e) {
-			System.out.println(e.toString());
 			fail(e.toString());
 		}
 	}
+
+	@Test
+	public void testObtenerTodosMismoUsuario() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesionesDAO.alta(sesion1_2);
+			sesionesDAO.alta(sesion2);
+			sesionesDAO.alta(sesion3);
+			List<SesionUsuario> todasSesiones = sesionesDAO.obtenerTodosMismoUsr(usuario1.getId());
+
+			if (todasSesiones.size() == 2) {
+				for (SesionUsuario sesion : todasSesiones) {
+					assertEquals(usuario1, sesion.getUsr());
+				}
+			} else {
+				fail("SesionesDAOTest.testObtenerTodosMismoUsuario: Se encontraron " + todasSesiones.size()
+						+ " sesiones cuando debían de ser 2.");
+			}
+
+		} catch (Exception e) {
+			fail(e.toString());
+		}
+	}
+
 	@Test
 	public void testActualizar() {
 		try {
 			sesionesDAO.alta(sesion1);
 			sesion1.setFecha(sesion2.getFecha());
-			sesionesDAO.actualizar(sesion1);			
+			sesionesDAO.actualizar(sesion1);
+
 			assertEquals(sesionesDAO.obtener(sesion1.getId()).getFecha(), sesion2.getFecha());
 		} catch (Exception e) {
-			System.out.println(e.toString());
 			fail(e.toString());
 		}
 	}
+
 	@Test
 	public void testBaja() {
 		try {
 			sesionesDAO.alta(sesion1);
 			sesionesDAO.alta(sesion2);
-			String id = sesion2.getId();			
+			String id = sesion2.getId();
 			sesionesDAO.baja(id);
-			assertNull(sesionesDAO.obtener(sesion2.getId()));
 
-		} catch (Exception e){
-			System.out.println(e.toString());
+			assertNull(sesionesDAO.obtener(sesion2.getId()));
+		} catch (Exception e) {
 			fail(e.toString());
 		}
 	}
