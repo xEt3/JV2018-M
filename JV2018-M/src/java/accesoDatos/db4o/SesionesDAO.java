@@ -88,6 +88,28 @@ public class SesionesDAO implements OperacionesDAO {
 	}
 
 	/**
+	 * Búsqueda de todas la sesiones de un mismo usuario.
+	 * 
+	 * @param idUsr - el identificador de usuario a buscar.
+	 * @return - Sublista con las sesiones encontrada.
+	 * @throws DatosException - si no existe ninguna.
+	 */
+	public List<SesionUsuario> obtenerTodosMismoUsr(String idUsr) throws DatosException {
+		assert idUsr != null;
+
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		query.descend("usr").descend("id").constrain(idUsr);
+		ObjectSet<SesionUsuario> result = query.execute();
+
+		if (result.size() > 0) {
+			return result;
+		} else {
+			throw new DatosException("No existe ninguna sesión de " + idUsr + ".");
+		}
+	}
+
+	/**
 	 * Alta de una nueva SesionUsuario.
 	 * 
 	 * @param obj - la SesionUsuario a almacenar.
