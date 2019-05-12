@@ -98,8 +98,10 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-
+		ObjectSet<Usuario> result = db.queryByExample(Usuario.class);
+		while (result.hasNext()) {
+			db.delete(result.next());
+		}
 	}
 
 	@Override
