@@ -171,4 +171,18 @@ public class SesionesDAOTest {
 			fail(e.toString());
 		}
 	}
+	@Test
+	public void testListarId() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesionesDAO.alta(sesion2);
+			sesionesDAO.alta(sesion3);
+			String sesiones = sesionesDAO.listarId();
+			assertNotNull(sesiones);
+			
+		} catch (Exception e) {
+			fail(e.toString());
+		}
+		
+	}
 }
