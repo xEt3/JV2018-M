@@ -56,8 +56,10 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	@Override
 	public List obtenerTodos() {
-		// TODO Auto-generated method stub
-		return null;
+		Query query = db.query();
+		query.constrain(Usuario.class);
+		ObjectSet<Usuario> result = query.execute();
+		return result;
 	}
 
 	@Override
@@ -96,8 +98,10 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-
+		ObjectSet<Usuario> result = db.queryByExample(Usuario.class);
+		while (result.hasNext()) {
+			db.delete(result.next());
+		}
 	}
 
 	@Override

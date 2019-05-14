@@ -40,6 +40,7 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	private MundosDAO() {
 		db = Conexion.getInstance();
+		cargarPredeterminados();
 	}
 
 	/**
