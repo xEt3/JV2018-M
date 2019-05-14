@@ -165,11 +165,10 @@ public class SesionesDAO implements OperacionesDAO {
 	public String listarDatos() {
 		StringBuffer result = new StringBuffer();
 		Query query = db.query();
-		query.constrain(SesionUsuario.class);
-		query.descend("usr").descend("id");
-		ObjectSet <SesionUsuario> listaIdSes = query.execute();
-		while (listaIdSes.hasNext()) {
-			result.append(listaIdSes.next().toString()+("\n")) ;
+		query.constrain(SesionUsuario.class);		
+		ObjectSet <SesionUsuario> listaSsn = query.execute();
+		while (listaSsn.hasNext()) {
+			result.append(listaSsn.next().toString()+("\n")) ;
 		}
 		return result.toString();
 	}
@@ -178,12 +177,13 @@ public class SesionesDAO implements OperacionesDAO {
 	public String listarId() {
 		StringBuffer result = new StringBuffer();
 		Query query = db.query();
-		query.constrain(SesionUsuario.class);		
-		ObjectSet <SesionUsuario> listaSsn = query.execute();
-		while (listaSsn.hasNext()) {
-			result.append(listaSsn.next().toString()+("\n")) ;
+		query.constrain(SesionUsuario.class);
+		query.descend("usr").descend("id");
+		ObjectSet <SesionUsuario> listaIdSes = query.execute();
+		while (listaIdSes.hasNext()) {
+			result.append(listaIdSes.next().toString()+("\n")) ;
 		}
-		return result.toString();
+		return result.toString();		
 	}
 
 	/**
