@@ -139,4 +139,21 @@ public class SesionesDAOTest {
 			fail(e.toString());
 		}
 	}
+	
+	@Test
+	public void testBorrarTodos() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesionesDAO.alta(sesion2);
+			sesionesDAO.alta(sesion3);
+			sesionesDAO.borrarTodo();
+			List<SesionUsuario> sesiones = sesionesDAO.obtenerTodos();
+			
+			for (SesionUsuario sesionUsuario : sesiones) {
+				fail("No debe llegar aquí");
+			}
+		} catch (Exception e) {
+			fail(e.toString());
+		}
+	}
 }
