@@ -14,6 +14,7 @@ package accesoDatos.db4o;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
@@ -153,6 +154,20 @@ public class SesionesDAOTest {
 				fail("No debe llegar aquí");
 			}
 		} catch (Exception e) {
+			fail(e.toString());
+		}
+	}
+	
+	@Test
+	public void testListarDatos() {
+		try {
+			sesionesDAO.alta(sesion1);
+			sesionesDAO.alta(sesion2);
+			sesionesDAO.alta(sesion3);
+			String sesiones = sesionesDAO.listarDatos();
+			assertNotNull(sesiones);
+			
+		} catch (Exception e){
 			fail(e.toString());
 		}
 	}

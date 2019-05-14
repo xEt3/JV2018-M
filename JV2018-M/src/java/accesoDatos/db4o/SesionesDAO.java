@@ -158,11 +158,19 @@ public class SesionesDAO implements OperacionesDAO {
 			throw new DatosException("SesionesDAO.actualizar: sesion no encontrada");
 		}
 	}
-
+	/**
+	 * @return un String con todos los usuarios 
+	 */
 	@Override
 	public String listarDatos() {
-		// TODO OperacionesDAO.listarDatos
-		return null;
+		StringBuffer result = new StringBuffer();
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);		
+		ObjectSet <SesionUsuario> listaSsn = query.execute();
+		while (listaSsn.hasNext()) {
+			result.append(listaSsn.next().toString()) ;
+		}
+		return result.toString();
 	}
 
 	@Override
