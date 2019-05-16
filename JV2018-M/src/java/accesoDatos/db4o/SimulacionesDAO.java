@@ -150,14 +150,32 @@ private static SimulacionesDAO instance;
 	//Se usa
 	@Override
 	public void actualizar(Object obj) throws DatosException  {
+		assert obj != null;
+		Simulacion simulacionBD = obtener(((Simulacion) obj).getId());
+		Simulacion simulacionRef = (Simulacion) obj;
+		if(simulacionBD != null) {
+			simulacionBD.setEstado(simulacionRef.getEstado());
+			simulacionBD.setFecha(simulacionRef.getFecha());
+			simulacionBD.setUsr(simulacionRef.getUsr());
+			db.store(simulacionBD);
+		}else {
+			throw new DatosException("SimulacionesDAO.actualizar: simulacion no encontrara");
+		}
 	}
 
 	//Se usa
 	@Override
 	public String listarDatos() {
-		return null;
+		StringBuffer result = new StringBuffer();
+		Query query = db.query();
+		query.constrain(Simulacion.class);		
+		ObjectSet <Simulacion> listaS = query.execute();
+		while (listaS.hasNext()) {
+			result.append(listaS.next().toString()+("\n")) ;
+		}
+		return result.toString();	
 	}
-
+	
 	//Se usa
 	@Override
 	public String listarId() {
@@ -168,8 +186,4 @@ private static SimulacionesDAO instance;
     @Override
     public void borrarTodo() {
     }
-
-	@Override
-	public void cerrar() {
-	}
 } //class
