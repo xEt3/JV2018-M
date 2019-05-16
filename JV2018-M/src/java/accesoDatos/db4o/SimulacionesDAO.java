@@ -77,7 +77,18 @@ private static SimulacionesDAO instance;
 
 	
 	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) throws DatosException {
-		return null;
+		assert idUsr != null;
+		
+		Query query = db.query();
+		query.constrain(Simulacion.class);
+		query.descend("usr").descend("id").constrain(idUsr);
+		ObjectSet<Simulacion> result = query.execute();
+		
+		if(result.size() > 0) {
+			return result;
+		}else {
+			throw new DatosException("No existe ninguna simulacion de " + idUsr + ".");
+		}
 	}
 	
 	
@@ -124,10 +135,16 @@ private static SimulacionesDAO instance;
 		}
 	}
 
-	//Se usa
 	@Override
 	public Simulacion baja(String idSimulacion) throws DatosException  {
-		return null;
+		assert idSimulacion != null;
+		Simulacion simulacionBD = obtener(idSimulacion);
+		if(simulacionBD != null) {
+			db.delete(simulacionBD);
+			return simulacionBD;
+		} else {
+			throw new DatosException("SimulacionesDAO.baja: " + idSimulacion + " no existe");
+		}
 	}
 	
 	//Se usa
