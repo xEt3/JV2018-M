@@ -193,5 +193,9 @@ private static SimulacionesDAO instance;
 	//Se usa
     @Override
     public void borrarTodo() {
+        ObjectSet<Simulacion> result = db.queryByExample(Simulacion.class);
+        while(result.hasNext()) {
+            db.delete(result.next());
+        }
     }
 } //class
