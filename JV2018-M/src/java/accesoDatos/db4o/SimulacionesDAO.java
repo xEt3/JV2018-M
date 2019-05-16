@@ -99,10 +99,11 @@ private static SimulacionesDAO instance;
 		}
 	}
 	
-	/*
+	
 	private List<Simulacion> separarSimulacionesUsr(int ultima) {
+		return null;
 	}
-	*/
+	
 	
 	//Se usa
 	public void alta(Object obj) throws DatosException  {
