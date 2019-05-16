@@ -101,12 +101,27 @@ private static SimulacionesDAO instance;
 	
 	
 	private List<Simulacion> separarSimulacionesUsr(int ultima) {
-		return null;
+		Query query = db.query();
+		query.constrain(Simulacion.class);
+		ObjectSet <Simulacion> lista = query.execute();
+		String idUsr = lista.get(ultima).getUsr().getId();
+		int primera = ultima;
+		for (int i = ultima; i >= 0 && lista.get(i).getUsr().getId().equals(idUsr); i--) {
+			primera = i;
+		}
+		return lista.subList(primera, ultima+1);
 	}
 	
 	
 	//Se usa
 	public void alta(Object obj) throws DatosException  {
+		assert obj != null;
+		Simulacion simulacionNueva = (Simulacion) obj;
+		if(obtener(simulacionNueva.getId()) == null) {
+			db.store(simulacionNueva);
+		}else {
+			throw new DatosException("SimulacionesDAO.alta: " + simulacionNueva.getId() + " ya existe");
+		}
 	}
 
 	//Se usa
