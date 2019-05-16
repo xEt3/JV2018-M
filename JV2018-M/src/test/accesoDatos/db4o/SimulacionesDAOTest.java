@@ -193,10 +193,5 @@ class SimulacionesDAOTest {
 		}
 		
 	}
-	
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
 
 }
