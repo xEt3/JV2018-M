@@ -14,82 +14,130 @@
 
 package accesoDatos.db4o;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.List;
+
+import com.db4o.ObjectContainer;
+import com.db4o.ObjectSet;
+import com.db4o.query.Predicate;
+import com.db4o.query.Query;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.memoria.DAOIndexSort;
 import config.Configuracion;
-import modelo.Identificable;
 import modelo.ModeloException;
-import modelo.SesionUsuario;
 import modelo.Simulacion;
 import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario;
 import util.Fecha;
 
-public class SimulacionesDAO extends DAOIndexSort implements OperacionesDAO, Persistente {
+public class SimulacionesDAO implements OperacionesDAO {
 
+private static SimulacionesDAO instance;
+	
+	private ObjectContainer db;
+	
 	private SimulacionesDAO() {
+		db = Conexion.getInstance();
 	}
 
 	public static SimulacionesDAO getInstance() {
-	}
-
-	private void cargarPredeterminados() {
-	}
-
-	@Override
-	public void recuperarDatos() {
+		if (instance == null) {
+			instance = new SimulacionesDAO();
+		}
+		return instance;
 	}
 	
-	@Override
-	public void guardarDatos() {
-	}
-	
+	//Se usa 
 	@Override
 	public Simulacion obtener(String id) {
+		assert id != null;
+		
+		List<Simulacion> simulaciones = db.query(
+			new Predicate<Simulacion>() {
+				public boolean match(Simulacion simulacion) {
+					return simulacion.getId().equals(id);
+				}
+			}
+		);
+		
+		if(simulaciones.size() > 0) {
+			return simulaciones.get(0);
+		}
+		return null;
 	}
 
-	@Override
-	public List obtenerTodos() {
-	}
+	//Se usa
+    @Override
+    public List obtenerTodos() {
+        Query query = db.query();
+        query.constrain(Simulacion.class);
+        ObjectSet<Simulacion> result = query.execute();
+        return result;
+    }
 
-	public List<Identificable> obtenerTodasMismoUsr(String idUsr) {
+	
+	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) throws DatosException {
+		return null;
 	}
-
-	private List<Identificable> separarSimulacionesUsr(int ultima) {
+	
+	
+	 
+	private void cargarPredeterminados() {
+		try {
+			Simulacion simulacionDemo;
+			simulacionDemo=new Simulacion((Usuario)UsuariosDAO.getInstance().obtener(new Usuario().getId()),
+								new Fecha(Configuracion.get().getProperty("fecha.predeterminadaFija")), 
+								MundosDAO.getInstance().obtener(Configuracion.get().getProperty("mundo.nombrePredeterminado")),
+								Integer.parseInt(Configuracion.get().getProperty("simulacion.ciclosPredeterminados")),
+								EstadoSimulacion.PREPARADA);
+			if(db.queryByExample(simulacionDemo).isEmpty()) {
+				alta(simulacionDemo);
+			}
+		} 
+		catch (DatosException | ModeloException e) {
+			e.printStackTrace();
+		}
 	}
-
+	
+	
+	private List<Simulacion> separarSimulacionesUsr(int ultima) {
+		return null;
+	}
+	
+	
+	//Se usa
 	public void alta(Object obj) throws DatosException  {
 	}
 
+	//Se usa
 	@Override
 	public Simulacion baja(String idSimulacion) throws DatosException  {
+		return null;
 	}
 	
+	//Se usa
 	@Override
 	public void actualizar(Object obj) throws DatosException  {
 	}
 
+	//Se usa
 	@Override
 	public String listarDatos() {
+		return null;
 	}
 
+	//Se usa
 	@Override
 	public String listarId() {
+		return null;
 	}
 
-	@Override
-	public void borrarTodo() {
-	}
+	//Se usa
+    @Override
+    public void borrarTodo() {
+    }
 
 	@Override
 	public void cerrar() {
 	}
-	
 } //class
