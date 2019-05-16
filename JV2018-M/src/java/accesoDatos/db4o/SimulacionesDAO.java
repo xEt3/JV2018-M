@@ -77,18 +77,7 @@ private static SimulacionesDAO instance;
 
 	
 	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) throws DatosException {
-		assert idUsr != null;
-		
-		Query query = db.query();
-		query.constrain(Simulacion.class);
-		query.descend("usr").descend("id").constrain(idUsr);
-		ObjectSet<Simulacion> result = query.execute();
-		
-		if(result.size() > 0) {
-			return result;
-		}else {
-			throw new DatosException("No existe ninguna simulacion de " + idUsr + ".");
-		}
+		return null;
 	}
 	
 	
@@ -117,42 +106,17 @@ private static SimulacionesDAO instance;
 	
 	//Se usa
 	public void alta(Object obj) throws DatosException  {
-		assert obj != null;
-		Simulacion simulacionNueva = (Simulacion) obj;
-		if(obtener(simulacionNueva.getId()) == null) {
-			db.store(simulacionNueva);
-		}else {
-			throw new DatosException("SimulacionesDAO.alta: " + simulacionNueva.getId() + " ya existe");
-		}
 	}
 
 	//Se usa
 	@Override
 	public Simulacion baja(String idSimulacion) throws DatosException  {
-		assert idSimulacion != null;
-		Simulacion simulacionBD = obtener(idSimulacion);
-		if(simulacionBD != null) {
-			db.delete(simulacionBD);
-			return simulacionBD;
-		} else {
-			throw new DatosException("SimulacionesDAO.baja: " + idSimulacion + " no existe");
-		}
+		return null;
 	}
 	
 	//Se usa
 	@Override
 	public void actualizar(Object obj) throws DatosException  {
-		assert obj != null;
-		Simulacion simulacionBD = obtener(((Simulacion) obj).getId());
-		Simulacion simulacionRef = (Simulacion) obj;
-		if(simulacionBD != null) {
-			simulacionBD.setEstado(simulacionRef.getEstado());
-			simulacionBD.setFecha(simulacionRef.getFecha());
-			simulacionBD.setUsr(simulacionRef.getUsr());
-			db.store(simulacionBD);
-		}else {
-			throw new DatosException("SimulacionesDAO.actualizar: simulacion no encontrara");
-		}
 	}
 
 	//Se usa
@@ -170,10 +134,6 @@ private static SimulacionesDAO instance;
 	//Se usa
     @Override
     public void borrarTodo() {
-        ObjectSet<Simulacion> result = db.queryByExample(Simulacion.class);
-        while(result.hasNext()) {
-            db.delete(result.next());
-        }
     }
 
 	@Override
