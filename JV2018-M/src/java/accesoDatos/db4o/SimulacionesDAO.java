@@ -176,10 +176,18 @@ private static SimulacionesDAO instance;
 		return result.toString();	
 	}
 	
-	//Se usa
+//Se usa
 	@Override
 	public String listarId() {
-		return null;
+		StringBuffer result = new StringBuffer();
+		Query query = db.query();
+		query.constrain(SesionUsuario.class);
+		query.descend("simulacion").descend("id");
+		ObjectSet <Simulacion> listaIdSes = query.execute();
+		while (listaIdSes.hasNext()) {
+			result.append(listaIdSes.next().toString()+("\n")) ;
+		}
+		return result.toString();
 	}
 
 	//Se usa
