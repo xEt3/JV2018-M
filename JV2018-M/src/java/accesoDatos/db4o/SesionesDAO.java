@@ -1,15 +1,15 @@
 /** 
  * Proyecto: Juego de la vida.
- * Resuelve todos los aspectos del almacenamiento del DTO Patron utilizando un ArrayList.
+ * Resuelve todos los aspectos del almacenamiento de objetos SesionUsuario en base de datos db4o.
  * Aplica el patron Singleton.
- * Participa del patron Template Method heredando el método indexSort().
  * Colabora en el patrón Façade.
- * @since: prototipo2.1
+ * @since: prototipo2.0
  * @source: SesionesDAO.java
- * @version: 2.1 - 2019.05.03
+ * @version: 2.1 - 2019.05.20
  * @author: Grupo 1
  * @author: Miguel Fernández Piñero (MiguelFerPi)
  * @author: Jesús Pérez Robles (jebles)
+ * @author: ajp
  */
 
 package accesoDatos.db4o;
@@ -88,25 +88,16 @@ public class SesionesDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * Búsqueda de todas la sesiones de un mismo usuario.
-	 * 
-	 * @param idUsr - el identificador de usuario a buscar.
-	 * @return - Sublista con las sesiones encontrada.
-	 * @throws DatosException - si no existe ninguna.
+	 * Obtiene todas las sesiones por IdUsr de usuario.
+	 * @param idUsr - el idUsr a buscar.
+	 * @return - las sesiones encontradas.
 	 */
-	public List<SesionUsuario> obtenerTodosMismoUsr(String idUsr) throws DatosException {
+	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr) {
 		assert idUsr != null;
-
-		Query query = db.query();
-		query.constrain(SesionUsuario.class);
-		query.descend("usr").descend("id").constrain(idUsr);
-		ObjectSet<SesionUsuario> result = query.execute();
-
-		if (result.size() > 0) {
-			return result;
-		} else {
-			throw new DatosException("No existe ninguna sesión de " + idUsr + ".");
-		}
+		Query consulta = db.query();
+		consulta.constrain(SesionUsuario.class);
+		consulta.descend("usr").descend("idUsr").constrain(idUsr);
+		return consulta.execute();
 	}
 
 	/**
@@ -133,7 +124,7 @@ public class SesionesDAO implements OperacionesDAO {
 	 * @throws DatosException - si no la encuentra
 	 */
 	@Override
-	public Object baja(String id) throws DatosException {
+	public SesionUsuario baja(String id) throws DatosException {
 		assert id != null;
 		SesionUsuario sesionBD = obtener(id);
 		if (sesionBD != null) {

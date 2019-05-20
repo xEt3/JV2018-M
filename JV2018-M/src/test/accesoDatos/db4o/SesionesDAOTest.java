@@ -98,7 +98,7 @@ public class SesionesDAOTest {
 			sesionesDAO.alta(sesion1_2);
 			sesionesDAO.alta(sesion2);
 			sesionesDAO.alta(sesion3);
-			List<SesionUsuario> todasSesiones = sesionesDAO.obtenerTodosMismoUsr(usuario1.getId());
+			List<SesionUsuario> todasSesiones = sesionesDAO.obtenerTodasMismoUsr(usuario1.getId());
 
 			if (todasSesiones.size() == 2) {
 				for (SesionUsuario sesion : todasSesiones) {
