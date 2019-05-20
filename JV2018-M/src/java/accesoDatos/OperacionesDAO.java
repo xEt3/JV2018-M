@@ -3,7 +3,7 @@
  * Interfaz con las operaciones básicas DAO, necesarias para la fachada.
  * @since: prototipo2.0
  * @source: OperacionesDAO.java  
- * @version: 2.0 - 2019.03.15 
+ * @version: 2.1 - 2019.05.15 
  * @author: ajp
  */
 
@@ -16,10 +16,9 @@ public interface OperacionesDAO {
 	/**
 	 * Obtiene el objeto dado el id utilizado para el almacenamiento.
 	 * @param id - el idUsr de Usuario a obtener.
-	 * @return - el Usuario encontrado; DatosException si no existe.
-	 * @throws DatosException 
+	 * @return - el Usuario encontrado; null si no existe.
 	 */	
-	Object obtener(String id) throws DatosException;
+	Object obtener(String id);
 	
 	/**
 	 * obtiene todos los objetos almacenados en una lista.
