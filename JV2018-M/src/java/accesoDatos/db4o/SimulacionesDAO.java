@@ -1,15 +1,18 @@
 /** 
  * Proyecto: Juego de la vida.
- * Version de SimulacionesDAO orientada a utilizar db4o
- * @since: prototipo2.1
+ * Resuelve todos los aspectos del almacenamiento de Simulaciones en base de datos db4o.
+ * Aplica el patron Singleton.
+ * Colabora en el patrón Façade.
+ * @since: prototipo2.0
  * @source: SimulacionesDAO.java 
- * @version: 2.1 - 2019/05/09
+ * @version: 2.1 - 2019/05/20
  * @author: Nicolas Fernando Rodriguez Bon
  * @author: Adrian Martinez Martinez
  * @author: Emilio Muñoz Navarro
  * @author: Francisco Mendoza Ruiz
  * @author: Sergio Franco Gonzalez
  * @author: Jose Miguel Hernandez Rodriguez
+ * @author: ajp
  */
 
 package accesoDatos.db4o;
@@ -25,6 +28,7 @@ import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import config.Configuracion;
 import modelo.ModeloException;
+import modelo.SesionUsuario;
 import modelo.Simulacion;
 import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario;
@@ -76,22 +80,17 @@ private static SimulacionesDAO instance;
     }
 
 	
-	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) throws DatosException {
-		assert idUsr != null;
-		
-		Query query = db.query();
-		query.constrain(Simulacion.class);
-		query.descend("usr").descend("id").constrain(idUsr);
-		ObjectSet<Simulacion> result = query.execute();
-		
-		if(result.size() > 0) {
-			return result;
-		}else {
-			throw new DatosException("No existe ninguna simulacion de " + idUsr + ".");
-		}
+	/**
+	 * Obtiene de todas las simulaciones por IdUsr de usuario.
+	 * @param idUsr - el idUsr a buscar.
+	 * @return - las simulaciones encontradas.
+	 */
+	public List<Simulacion> obtenerTodasMismoUsr(String idUsr) {
+		Query consulta = db.query();
+		consulta.constrain(Simulacion.class);
+		consulta.descend("usr").descend("id").constrain(idUsr).equal();
+		return consulta.execute();	
 	}
-	
-	
 	 
 	private void cargarPredeterminados() {
 		try {
