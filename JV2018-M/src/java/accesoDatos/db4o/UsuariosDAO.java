@@ -1,10 +1,9 @@
 /** 
  * Proyecto: Juego de la vida.
- * Versión de UsuariosDAO orientada a utilizar
- * la base de datos db4o.
+ * Versión de UsuariosDAO que utiliza la base de datos db4o.
  * @since: prototipo2.1
  * @source: UsuariosDAO.java 
- * @version: 2.1 - 2019/05/09 
+ * @version: 2.1 - 2019/05/20
  * @author: Grupo 2
  * @author: Javier Muñoz Iniesta
  * @author: Jose Manuel Ibáñez Sola-Belando
@@ -12,6 +11,7 @@
  * @author: Nilo Gómez Fernández
  * @author: Pablo Muelas Ballesta
  * @author: Pablo Meseguer Lax
+ * @author: ajp
  */
 
 package accesoDatos.db4o;
@@ -49,7 +49,7 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 	
 	@Override
-	public Object obtener(String id) throws DatosException {
+	public Usuario obtener(String id) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -69,7 +69,7 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Object baja(String id) throws DatosException {
+	public Usuario baja(String id) throws DatosException {
 		// TODO Auto-generated method stub
 		return null;
 	}
