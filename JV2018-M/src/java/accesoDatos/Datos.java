@@ -3,7 +3,7 @@
  * Almacén de datos del programa. Utiliza patron Façade.
  * @since: prototipo2.0
  * @source: Datos.java 
- * @version: 2.1 - 2019.05.09
+ * @version: 2.1 - 2019.05.10
  * @author: ajp
  */
 
@@ -11,10 +11,10 @@ package accesoDatos;
 
 import java.util.List;
 
+import accesoDatos.db4o.UsuariosDAO;
 import accesoDatos.db4o.MundosDAO;
-import accesoDatos.fichero.SesionesDAO;
-import accesoDatos.fichero.SimulacionesDAO;
-import accesoDatos.fichero.UsuariosDAO;
+import accesoDatos.db4o.SesionesDAO;
+import accesoDatos.db4o.SimulacionesDAO;
 import modelo.Identificable;
 import modelo.ModeloException;
 import modelo.Mundo;
@@ -146,10 +146,9 @@ public class Datos {
 	 * Método fachada que obtiene un Usuario dado el idSesion. 
 	 * Reenvia petición al método DAO específico.
 	 * @param idSesion - el idUsr + fecha de la SesionUsuario a obtener.
-	 * @return - la SesionUsuario encontrada.
-	 * @throws DatosException - si no existe.
+	 * @return - la SesionUsuario encontrada; null si no encuentra.
 	 */	
-	public SesionUsuario obtenerSesion(String idSesion) throws DatosException {
+	public SesionUsuario obtenerSesion(String idSesion) {
 		return sesionesDAO.obtener(idSesion);
 	}
 
@@ -157,10 +156,9 @@ public class Datos {
 	 * Método fachada que obtiene un Usuario dado un objeto.
 	 * Reenvia petición al método DAO específico.
 	 * @param sesion - la SesionUsuario a obtener.
-	 * @return - la SesionUsuario encontrada.
-	 * @throws DatosException - si no existe.
+	 * @return - la SesionUsuario encontrada; null si no encuentra.
 	 */	
-	public SesionUsuario obtenerSesion(SesionUsuario sesion) throws DatosException {
+	public SesionUsuario obtenerSesion(SesionUsuario sesion) {
 		return sesionesDAO.obtener(sesion.getId());
 	}
 
@@ -170,7 +168,7 @@ public class Datos {
 	 * @param simulacion - el objeto Simulacion a obtener.
 	 * @return - lista de simulaciones encontradas.
 	 */	
-	public List<Identificable> obtenerSesionesUsuario(String idUsr) {
+	public List<SesionUsuario> obtenerSesionesUsuario(String idUsr) {
 		return sesionesDAO.obtenerTodasMismoUsr(idUsr);
 	}
 			
@@ -245,8 +243,7 @@ public class Datos {
 	 * Método fachada que obtiene una Simulacion dado el idSimulacion. 
 	 * Reenvia petición al método DAO específico.
 	 * @param idSimulacion - el id de la Simulacion a obtener.
-	 * @return - la Simulacion encontrada.
-	 * @throws DatosException - si no existe.
+	 * @return - la Simulacion encontrada; null si no encuentra.
 	 */	
 	public Simulacion obtenerSimulacion(String idSimulacion) {
 		return simulacionesDAO.obtener(idSimulacion);
@@ -256,8 +253,7 @@ public class Datos {
 	 * Método fachada que obtiene una Simulacion dado un objeto.
 	 * Reenvia petición al método DAO específico. 
 	 * @param simulacion - el objeto Simulacion a obtener.
-	 * @return - la Simulacion encontrada.
-	 * @throws DatosException - si no existe.
+	 * @return - la Simulacion encontrada; null si no encuentra.
 	 */	
 	public Simulacion obtenerSimulacion(Simulacion simulacion) {
 		assert simulacion != null;
@@ -269,9 +265,8 @@ public class Datos {
 	 * Reenvia petición al método DAO específico.
 	 * @param simulacion - el objeto Simulacion a obtener.
 	 * @return - lista de simulaciones encontradas.
-	 * @throws ModeloException 
 	 */	
-	public List<Identificable> obtenerSimulacionesUsuario(String idUsr) {
+	public List<Simulacion> obtenerSimulacionesUsuario(String idUsr) {
 		return simulacionesDAO.obtenerTodasMismoUsr(idUsr);
 	}
 
@@ -339,9 +334,10 @@ public class Datos {
 	 * Método fachada para obtener un dado su nombre. 
 	 * Reenvia petición al método DAO específico.
 	 * @param nombre - el nombre de un Mundo a buscar.
-	 * @return - el Mundo encontrado.
+	 * @return - el Mundo encontrado null si no existe.
 	 */
 	public Mundo obtenerMundo(String nombre) {
+		assert nombre != null;
 		return mundosDAO.obtener(nombre);
 	}
 
@@ -349,8 +345,7 @@ public class Datos {
 	 * Método fachada para obtener un dado un objeto.
 	 * Reenvia petición al método DAO específico. 
 	 * @param mundo - el objeto Mundo a buscar.
-	 * @return - el Mundo encontrado.
-	 * @throws DatosException - si no existe.
+	 * @return - el Mundo encontrado null si no existe.
 	 */
 	public Mundo obtenerMundo(Mundo mundo) {
 		assert mundo != null;
@@ -363,7 +358,7 @@ public class Datos {
 	 * @param mundo - el objeto Mundo a dar de alta.
 	 * @throws DatosException - si ya existe.
 	 */
-	public void altaMundo(Mundo mundo) throws DatosException {
+	public void altaMundo(Mundo mundo) throws DatosException  {
 		mundosDAO.alta(mundo);
 	}
 
