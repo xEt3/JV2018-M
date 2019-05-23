@@ -41,7 +41,7 @@ private static SimulacionesDAO instance;
 	private ObjectContainer db;
 	
 	private SimulacionesDAO() {
-		db = Conexion.getInstance();
+		db = Conexion.getDB();
 	}
 
 	public static SimulacionesDAO getInstance() {

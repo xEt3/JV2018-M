@@ -119,7 +119,7 @@ public class Mundo implements Identificable, Serializable {
 		this.espacio = espacio;
 	}
 	
-	private void setConstantes(Map constantes) {
+	public void setConstantes(Map constantes) {
 		assert constantes != null;
 		this.constantes = constantes;	
 	}

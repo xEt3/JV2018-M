@@ -35,7 +35,7 @@ public class SesionesDAO implements OperacionesDAO {
 
 	// Constructor
 	private SesionesDAO() {
-		db = Conexion.getInstance();
+		db = Conexion.getDB();
 	}
 
 	/**
