@@ -12,9 +12,9 @@ package accesoUsr.consola.control;
 import accesoDatos.Datos;
 import accesoUsr.consola.vista.VistaPrincipal;
 import config.Configuracion;
-import modelo.ModeloException;
 import modelo.SesionUsuario;
-import modelo.Usuario;
+import modelo.Simulacion;
+import modelo.Simulacion.EstadoSimulacion;
 import util.Fecha;
 
 public class ControlPrincipal {
@@ -152,11 +152,13 @@ public class ControlPrincipal {
 	}
 
 	private void ejecutarDemoSimulacion() {
-		try {
-			new ControlSimulacion(fachada.obtenerSimulacion(new Usuario().getId() + "-" + new Fecha(Configuracion.get().getProperty("fecha.predeterminadaFija")).toStringMarcaTiempo()));
-		} catch (ModeloException e) {
-			e.printStackTrace();
-		}
+		Simulacion demo;
+			demo = new Simulacion(sesionUsr.getUsr(),
+					new Fecha(), 
+					fachada.obtenerMundo(Configuracion.get().getProperty("mundo.nombrePredeterminado")),
+					Integer.parseInt(Configuracion.get().getProperty("simulacion.ciclosPredeterminados")),
+					EstadoSimulacion.PREPARADA);
+		new ControlSimulacion(demo);
 	}
 
 	// Mundos

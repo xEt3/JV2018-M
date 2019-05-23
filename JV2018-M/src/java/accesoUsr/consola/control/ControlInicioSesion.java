@@ -64,12 +64,10 @@ public class ControlInicioSesion {
 						&& usrEnSesion.getClaveAcceso().equals(new ClaveAcceso(clave))) {
 					registrarSesion();
 					return;
-				} else {
-					intentosPermitidos--;
-					vistaSesion.mostrarMensaje("Credenciales incorrectas...");
-					vistaSesion.mostrarMensaje("Quedan " + intentosPermitidos + " intentos... ");
-				}
-			} catch (ModeloException e) {
+				} 
+				throw new ModeloException();
+			} 
+			catch (ModeloException e) {
 				intentosPermitidos--;
 				vistaSesion.mostrarMensaje("Credenciales incorrectas...");
 				vistaSesion.mostrarMensaje("Quedan " + intentosPermitidos + " intentos... ");
