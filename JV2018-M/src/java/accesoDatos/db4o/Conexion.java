@@ -49,7 +49,7 @@ public class Conexion {
 	 *  Sólo se crea una vez; instancia única -patrón singleton-
 	 *  @return instance
 	 */
-	public static ObjectContainer getInstance() {
+	public static ObjectContainer getDB() {
 		if (db == null) {
 			new Conexion();
 		}
