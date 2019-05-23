@@ -1,15 +1,22 @@
 /** 
  * Proyecto: Juego de la vida.
- * Resuelve todos los aspectos del almacenamiento del DTO Mundo.
- * Utilizando base de datos db4o.
- * Colabora en el patron Fachada.
+ * Resuelve todos los aspectos del almacenamiento del DTO Mundo utilizando una base de datos.
+ * Aplica el patron Singleton.
+ * Colabora en el patrón Façade.
  * @since: prototipo2.0
  * @source: MundosDAO.java 
- * @version: 2.1 - 2019.05.03
- * @author: ajp
+ * @version: 2.1 - 2019/03/25
+ *  @author: Grupo 3
+ *  @author Antonio Ruiz
+ *  @author Atanas Genchev
+ *  @author Roberto Bastida
+ *  @author Ignacio Belmonte
+ *  @author Ramon Moreno
+ *  @author Ramon Moñino
  */
 
 package accesoDatos.db4o;
+
 import java.util.List;
 
 import com.db4o.ObjectContainer;
@@ -41,11 +48,11 @@ public class MundosDAO implements OperacionesDAO {
 	private ObjectContainer db;
 
 	/**
-	 *  Método estático de acceso a la instancia única.
-	 *  Si no existe la crea invocando al constructor interno.
-	 *  Utiliza inicialización diferida.
-	 *  Sólo se crea una vez; instancia única -patrón singleton-
-	 *  @return instance
+	 * Método estático de acceso a la instancia única. Si no existe la crea
+	 * invocando al constructor interno. Utiliza inicialización diferida. Sólo se
+	 * crea una vez; instancia única -patrón singleton-
+	 * 
+	 * @return instance
 	 */
 	public static MundosDAO getInstance() {
 		if (instance == null) {
@@ -55,8 +62,7 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * Constructor por defecto de uso interno.
-	 * Sólo se ejecutará una vez.
+	 * Constructor por defecto de uso interno. Sólo se ejecutará una vez.
 	 */
 	private MundosDAO() {
 		db = Conexion.getDB();
@@ -66,54 +72,53 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 *  Método para generar de datos predeterminados.
+	 * Método para generar de datos predeterminados.
 	 */
 	private void cargarPredeterminados() {
-		try {	
+		try {
 			Mundo mundoDemo = new Mundo(); // En este array los 0 indican celdas con célula muerta y los 1 vivas
-			byte[][] espacioDemo =  new byte[][]{ 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, // 
-				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
-				{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Still Life
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
-				{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }  //
+			byte[][] espacioDemo = new byte[][] { { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Planeador
+					{ 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Flip-Flop
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, // 1x Still Life
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }, //
+					{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } //
 			};
 			mundoDemo.setEspacio(espacioDemo);
 			mundoDemo.setTipoMundo(Mundo.FormaEspacio.ESFERICO);
 			alta(mundoDemo);
-		} 
-		catch (DatosException | ModeloException e) {
+		} catch (DatosException | ModeloException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 *  Cierra conexión.
+	 * Cierra conexión.
 	 */
 	@Override
 	public void cerrar() {
 		db.close();
 	}
 
-	//OPERACIONES DAO
+	// OPERACIONES DAO
 	/**
 	 * Obtiene objeto Mundo dado su nombre.
+	 * 
 	 * @param nombreMundo - el nombre de Mundo a buscar.
 	 * @return - el Mundo encontrado o null si no existe.
-	 */	
+	 */
 	@Override
 	public Mundo obtener(String nombreMundo) {
 		Query consulta = db.query();
@@ -128,15 +133,17 @@ public class MundosDAO implements OperacionesDAO {
 
 	/**
 	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza nombre.
+	 * 
 	 * @param obj - el Mundo a buscar.
 	 * @return - el Mundo encontrado o null si no existe.
 	 */
-	public Mundo obtener(Object obj) throws DatosException  {
+	public Mundo obtener(Object obj) throws DatosException {
 		return this.obtener(((Mundo) obj).getNombre());
 	}
 
 	/**
 	 * Obtiene todos los objetos Mundo almacenados.
+	 * 
 	 * @return - la List con todos los mundos.
 	 */
 	@Override
@@ -147,10 +154,11 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 *  Alta de un nuevo Mundo sin repeticiones según el campo nombre. 
-	 *  @param obj - Mundo a buscar y obtener.
-	 *  @throws DatosException - si ya existe.
-	 */	
+	 * Alta de un nuevo Mundo sin repeticiones según el campo nombre.
+	 * 
+	 * @param obj - Mundo a buscar y obtener.
+	 * @throws DatosException - si ya existe.
+	 */
 	@Override
 	public void alta(Object obj) throws DatosException {
 		assert obj != null;
@@ -164,6 +172,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	/**
 	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * 
 	 * @param nombreMundo - el nombre del Mundo a eliminar.
 	 * @return - el Mundo eliminado.
 	 * @throws DatosException - si no existe.
@@ -182,27 +191,29 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
-	 *	@param obj - Mundo con las modificaciones.
-	 *  @throws DatosException - si no existe.
+	 * Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
+	 * 
+	 * @param obj - Mundo con las modificaciones.
+	 * @throws DatosException - si no existe.
 	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
 		assert obj != null;
 		Mundo mundo = (Mundo) obj;
 		Mundo mundoActualizado = obtener(mundo.getNombre());
-		if (mundoActualizado != null) {	
+		if (mundoActualizado != null) {
 			mundoActualizado.setEspacio(mundo.getEspacio());
 			mundoActualizado.setDistribucion(mundo.getDistribucion());
 			mundoActualizado.setConstantes(mundo.getConstantes());
 			mundoActualizado.setTipoMundo(mundo.getTipoMundo());
 			db.store(mundoActualizado);
-		}  	
+		}
 		throw new DatosException("(Actualizar: " + mundo.getNombre() + " no existe.");
 	}
 
 	/**
 	 * Obtiene el listado de todos los objetos Mundo almacenados.
+	 * 
 	 * @return el texto con el volcado de datos.
 	 */
 	@Override
@@ -211,7 +222,7 @@ public class MundosDAO implements OperacionesDAO {
 		Query consulta = db.query();
 		consulta.constrain(Mundo.class);
 		ObjectSet<Mundo> result = consulta.execute();
-		for (Mundo mundo: result) {
+		for (Mundo mundo : result) {
 			listado.append("\n" + mundo);
 		}
 		return listado.toString();
@@ -219,6 +230,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	/**
 	 * Obtiene el listado de todos los identificadores de mundos almacenados.
+	 * 
 	 * @return el texto con el volcado de datos.
 	 */
 	public String listarId() {
@@ -226,7 +238,7 @@ public class MundosDAO implements OperacionesDAO {
 		Query consulta = db.query();
 		consulta.constrain(Mundo.class);
 		ObjectSet<Mundo> result = consulta.execute();
-		for (Mundo mundo: result) {
+		for (Mundo mundo : result) {
 			if (mundo != null) {
 				listado.append(mundo.getNombre() + "\n");
 			}
@@ -240,10 +252,10 @@ public class MundosDAO implements OperacionesDAO {
 	@Override
 	public void borrarTodo() {
 		// Elimina cada uno de los objetos obtenidos.
-		for (Mundo mundo: obtenerTodos()) {
+		for (Mundo mundo : obtenerTodos()) {
 			db.delete(mundo);
 		}
 		cargarPredeterminados();
 	}
 
-} //class
+} // class
