@@ -19,10 +19,14 @@ package accesoDatos.mySql;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.table.DefaultTableModel;
 
@@ -31,6 +35,8 @@ import accesoDatos.OperacionesDAO;
 import config.Configuracion;
 import modelo.ModeloException;
 import modelo.Mundo;
+import modelo.Mundo.FormaEspacio;
+import modelo.Posicion;
 
 public class MundosDAO implements OperacionesDAO {
 
@@ -39,9 +45,9 @@ public class MundosDAO implements OperacionesDAO {
 
 	// Elemento de almacenamiento, base datos mySql.
 	private Connection db;
-	private Statement sentenciaMundo;
-	private ArrayList<Object> bufferObjetos;
-	private DefaultTableModel tmMundo;
+	private Statement stMundo;
+	private ArrayList<Object> bufferMundos;
+	private DefaultTableModel tmMundos;
 	private ResultSet rsMundo;
 
 	/**
@@ -81,18 +87,31 @@ public class MundosDAO implements OperacionesDAO {
 		db = Conexion.getDB();
 		try {
 			
-			sentenciaMundo = db.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			stMundo = db.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			crearTablaMundo();
 		} catch (SQLException e) {
 		}	
 		
 		
-		tmMundo = new DefaultTableModel();
-		bufferObjetos = new ArrayList<>();
+		tmMundos = new DefaultTableModel();
+		bufferMundos = new ArrayList<>();
 	}
 
 	private void crearTablaMundo() {
-		
+		try {
+			stMundo.executeQuery("CREATE TABLE MUNDO(" + 
+					"  nombre VARCHAR NOT NULL PRIMARY KEY," + 
+					"  espacioX INT NOT NULL," + 
+					"  espacioY INT NOT NULL," + 
+					"  distribucion VARCHAR NOT NULL," + 
+					"  valoresSobrevivir VARCHAR NOT NULL," + 
+					"  valoresRenacer VARCHAR NOT NULL," + 
+					"  tipoMundo ENUM(\"PLANO\",\"ESFERICO\") NOT NULL" + 
+					")");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -138,16 +157,153 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public Object obtener(String id) {
-		// TODO Auto-generated method stub
+		assert id != null;
+		ejecutarConsuta(id);
+		ejecutarColumnasModelo(); 
+		borrarFilasModelo();
+		rellenarFilasModelo();
+		sincronizarBufferUsuarios();
+		
+		if(bufferMundos.size() > 0) {
+			return (Mundo) bufferMundos.get(0);
+		}
 		return null;
 	}
 
+	private void ejecutarConsuta(String idMundo) {
+		try {
+			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = "+idMundo+"");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/**
+	 * Crea las columnas del TableModel a partir de los metadatos del ResultSet
+	 * de la base de datos
+	 */
+
+	private void ejecutarColumnasModelo() {
+		try {
+			ResultSetMetaData metaDatos = this.rsMundo.getMetaData();
+			
+			// numero total de columnas
+			int numCol = metaDatos.getColumnCount();
+			
+			//etiqueta de cada columna
+			Object[] etiquetas = new Object[numCol];
+			for (int i = 0; i < numCol; i++) {
+				etiquetas[i] = metaDatos.getColumnLabel(i + 1);
+			}
+			
+			// Incorpora array de etiquetas en el TableModel.
+			this.tmMundos.setColumnIdentifiers(etiquetas);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void borrarFilasModelo() {
+		while(this.tmMundos.getRowCount()>0) {
+			this.tmMundos.removeRow(0);
+		}
+		
+	}
+
+	private void rellenarFilasModelo() {
+		Object[] datosFila = new Object[this.tmMundos.getColumnCount()];
+		
+		try {
+			while(rsMundo.next()) {
+				for (int i = 0; i < this.tmMundos.getColumnCount(); i++) {
+					datosFila[i] = this.rsMundo.getObject(i+1);
+				}
+				this.tmMundos.addRow(datosFila);
+			}
+		}catch(SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
+	private void sincronizarBufferUsuarios() {
+		bufferMundos.clear();
+		for (int i = 0; i < tmMundos.getRowCount(); i++) {
+			try {
+				String nombre = (String) tmMundos.getValueAt(i, 0);
+				int espacioX = (Integer) tmMundos.getValueAt(i, 1);
+				int espacioY = (Integer) tmMundos.getValueAt(i, 2);
+				byte[][] espacio = new byte[espacioX][espacioY];
+				List<Posicion> distribucion = obtenerDistribucion((String)tmMundos.getValueAt(i, 3));
+				int valoresSobrevivir[] = obtenerReglas((String) tmMundos.getValueAt(i, 4));
+				int valoresRenacer[] = obtenerReglas((String) tmMundos.getValueAt(i, 5));
+				Map<String, int[]> constantes = new HashMap<String, int[]>();
+				constantes.put("ValoresSobrevivir", valoresSobrevivir);
+				constantes.put("ValoresRenacer", valoresRenacer);
+				FormaEspacio tipoMundo = obtenerTipoMundo((String)tmMundos.getValueAt(i,6));
+				bufferMundos.add(new Mundo(nombre,espacio,distribucion,constantes,tipoMundo));
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+	private List<Posicion> obtenerDistribucion(String distribucionFormateada) {
+		String[] coordenadas = distribucionFormateada.split(",");
+		List<Posicion> distribucion = new LinkedList<Posicion>();
+		for (int i = 0; i < coordenadas.length; i++) {
+			int x = coordenadas[i].charAt(0);
+			int y = coordenadas[i].charAt(1);
+			Posicion posicion = new Posicion(x,y);
+			distribucion.add(posicion);
+		}
+		return distribucion;
+	}
+
+	private int[] obtenerReglas(String reglasFormateadas) {
+		String[] valores = reglasFormateadas.split(",");
+		int[] valorFinal = new int[valores.length];
+		for (int i = 0; i < valores.length; i++) {
+			valorFinal[i]= Integer.parseInt(valores[i]);
+		}
+		return valorFinal;
+	}
+
+	private FormaEspacio obtenerTipoMundo(String tipoMundoFomateado) {
+		if(tipoMundoFomateado.equals("PLANO")) {
+			return FormaEspacio.PLANO;
+		}
+		if(tipoMundoFomateado.equals("ESFERICO")) {
+			return FormaEspacio.ESFERICO;
+		}
+		return FormaEspacio.PLANO;
+	}
+
+	public void establecerColumnasModelo() {
+		try {
+			ResultSetMetaData metaDatos = this.rsMundo.getMetaData();
+			int numCol = metaDatos.getColumnCount();
+			Object[] etiquetas = new Object[numCol];
+			for (int i = 0; i < numCol; i++) {
+				etiquetas[i] = metaDatos.getColumnLabel(i+1);
+			}
+			
+			this.tmMundos.setColumnIdentifiers(etiquetas);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza nombre.
 	 * @param obj - el Mundo a buscar.
 	 * @return - el Mundo encontrado o null si no existe.
 	 */
 	public Mundo obtener(Mundo obj) throws DatosException {
+		assert obj != null;
 		return (Mundo) this.obtener(obj.getId());
 	}
 	
@@ -192,6 +348,33 @@ public class MundosDAO implements OperacionesDAO {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	private String formatearDistribucion(List<Posicion> distibucion) {
+		StringBuilder valorFormateado = new StringBuilder();
+		for (int i = 0; i < distibucion.size(); i++) {
+			int x = distibucion.get(i).getX();
+			int y = distibucion.get(i).getY();
+			valorFormateado.append(x+y+",");
+		}
+		return valorFormateado.toString();
+	}
+	
+	private String formatearRegla(int[] reglas) {
+		StringBuilder reglaFormateada = new StringBuilder();
+		for (int i = 0; i < reglas.length; i++) {
+			reglaFormateada.append(reglas[i]+",");
+		}
+		return reglaFormateada.toString();
+	}
 
+	private String formatearTipoMundo(FormaEspacio tipoMundo) {
+		if(tipoMundo.equals(FormaEspacio.PLANO)) {
+			return "PLANO";
+		}
+		if(tipoMundo.equals(FormaEspacio.ESFERICO)) {
+			return "ESFERICO";
+		}
+		return "PLANO";
+	}
 
 } // class
