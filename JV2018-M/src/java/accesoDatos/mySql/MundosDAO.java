@@ -18,7 +18,13 @@
 package accesoDatos.mySql;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.table.DefaultTableModel;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
@@ -33,6 +39,10 @@ public class MundosDAO implements OperacionesDAO {
 
 	// Elemento de almacenamiento, base datos mySql.
 	private Connection db;
+	private Statement sentenciaMundo;
+	private ArrayList<Object> bufferObjetos;
+	private DefaultTableModel tmMundo;
+	private ResultSet rsMundo;
 
 	/**
 	 * Método estático de acceso a la instancia única. Si no existe la crea
@@ -53,11 +63,38 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	private MundosDAO() {
 		db = Conexion.getDB();
+		try {
+			inicializar();
+		} catch (SQLException e) {
+		}
+		
 		if (obtener(Configuracion.get().getProperty("mundo.nombrePredeterminado")) == null) {
 			cargarPredeterminados();
 		}
 	}
 
+	/**
+	 * Inicializa el DAO, detecta si existen las tablas de datos capturando la excepcion SQLException
+	 * @throws SQLException
+	 */
+	private void inicializar() throws SQLException {
+		db = Conexion.getDB();
+		try {
+			
+			sentenciaMundo = db.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			crearTablaMundo();
+		} catch (SQLException e) {
+		}	
+		
+		
+		tmMundo = new DefaultTableModel();
+		bufferObjetos = new ArrayList<>();
+	}
+
+	private void crearTablaMundo() {
+		
+	}
+	
 	/**
 	 * Método para generar de datos predeterminados.
 	 */
@@ -105,6 +142,15 @@ public class MundosDAO implements OperacionesDAO {
 		return null;
 	}
 
+	/**
+	 * Búsqueda de Usuario dado un objeto, reenvía al método que utiliza nombre.
+	 * @param obj - el Mundo a buscar.
+	 * @return - el Mundo encontrado o null si no existe.
+	 */
+	public Mundo obtener(Mundo obj) throws DatosException {
+		return (Mundo) this.obtener(obj.getId());
+	}
+	
 	@Override
 	public List obtenerTodos() {
 		// TODO Auto-generated method stub
