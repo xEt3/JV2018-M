@@ -159,7 +159,7 @@ public class MundosDAO implements OperacionesDAO {
 	public Object obtener(String id) {
 		assert id != null;
 		ejecutarConsuta(id);
-		ejecutarColumnasModelo(); // no se para que sirve
+		ejecutarColumnasModelo(); 
 		borrarFilasModelo();
 		rellenarFilasModelo();
 		sincronizarBufferUsuarios();
@@ -174,14 +174,35 @@ public class MundosDAO implements OperacionesDAO {
 		try {
 			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = "+idMundo+"");
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
+	
+	/**
+	 * Crea las columnas del TableModel a partir de los metadatos del ResultSet
+	 * de la base de datos
+	 */
 
 	private void ejecutarColumnasModelo() {
-	
+		try {
+			ResultSetMetaData metaDatos = this.rsMundo.getMetaData();
+			
+			// numero total de columnas
+			int numCol = metaDatos.getColumnCount();
+			
+			//etiqueta de cada columna
+			Object[] etiquetas = new Object[numCol];
+			for (int i = 0; i < numCol; i++) {
+				etiquetas[i] = metaDatos.getColumnLabel(i + 1);
+			}
+			
+			// Incorpora array de etiquetas en el TableModel.
+			this.tmMundos.setColumnIdentifiers(etiquetas);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void borrarFilasModelo() {
