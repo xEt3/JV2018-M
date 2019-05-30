@@ -1,6 +1,6 @@
 /** 
  * Proyecto: Juego de la vida.
- * Resuelve todos los aspectos del almacenamiento de objetos SesionUsuario en base de datos db4o.
+ * Resuelve todos los aspectos del almacenamiento de objetos SesionUsuario en base de datos mysql.
  * Aplica el patron Singleton.
  * Colabora en el patrón Façade.
  * @since: prototipo2.0
