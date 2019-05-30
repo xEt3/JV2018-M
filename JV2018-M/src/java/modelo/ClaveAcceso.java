@@ -4,7 +4,7 @@
  *  Utiliza un string para representar el texto del ClaveAcceso.  
  *  @since: prototipo1.2
  *  @source: ClaveAcceso.java 
- *  @version: 2.0 - 2019/03/23
+ *  @version: 2.2 - 2019/05/23
  *  @author: ajp
  */
 
@@ -37,19 +37,27 @@ public class ClaveAcceso implements Serializable {
 		return this.texto;
 	}
 
+	public void setTextoEncriptado(String textoEncriptado) throws ModeloException {
+		assert textoEncriptado != null;
+		if (textoEncriptado.matches(Formato.ALFABETO_CONTRASEÑA4)) {
+			this.texto = textoEncriptado;
+			return;
+		}
+		throw new ModeloException("ClaveAcceso: caracteres no válidos.");
+	}
+
 	public void setTexto(String texto) throws ModeloException {
 		assert texto != null;
 		if (ClaveAccesoValida(texto)) {
 			this.texto = Criptografia.cesar(texto);
+			return;
 		}
-		else {
-			if (this.texto == null) {							// En tiempo de constructor.	
-				this.texto = new ClaveAcceso().getTexto();		// Valor por defecto.
-			}
-			throw new ModeloException("ClaveAcceso: formato no válido.");
+		if (this.texto == null) {							// En tiempo de constructor.	
+			this.texto = new ClaveAcceso().getTexto();		// Valor por defecto.
 		}
+		throw new ModeloException("ClaveAcceso: formato no válido.");
 	}
-	
+
 	private boolean ClaveAccesoValida(String texto) {
 		return texto.matches(Formato.PATRON_CONTRASEÑA4);
 	}
@@ -62,14 +70,14 @@ public class ClaveAcceso implements Serializable {
 	public String toString() {
 		return texto;
 	}
-	
+
 	/**
 	 * hashcode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
 	 * Cuando Java compara dos objetos en estructuras de tipo hash (HashMap, HashSet etc)
 	 * primero invoca al método hashcode y luego el equals.
 	 * @return un número entero de 32 bit.
-	*/
+	 */
 	@Override
 	public int hashCode() {
 		final int primo = 31;
@@ -83,7 +91,7 @@ public class ClaveAcceso implements Serializable {
 	 * Son de la misma clase.
 	 * Tienen los mismos valores en los atributos; o son el mismo objeto.
 	 * @return falso si no cumple las condiciones.
-	*/
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj != null && getClass() == obj.getClass()) {
@@ -100,7 +108,7 @@ public class ClaveAcceso implements Serializable {
 	/**
 	 * Genera un clon del propio objeto realizando una copia profunda.
 	 * @return el objeto clonado.
-	*/
+	 */
 	@Override
 	public Object clone() {
 		// Utiliza el constructor copia.

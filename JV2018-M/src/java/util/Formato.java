@@ -27,7 +27,8 @@ public class Formato {
 	 * Al menos un caracter especial.
 	 * Mínimo 6 caracteres. 
 	 */
-	public static final String PATRON_CONTRASEÑA4 = "(?=.*\\d)(?=.*[A-ZÃ‘])(?=.*[a-zÃ±])(?=.*[#$*-+&!?%]).{6,}";
+	public static final String PATRON_CONTRASEÑA4 = "(?=.*\\d)(?=.*[A-ZÑ])(?=.*[a-zÑ])(?=.*[#$*-+&!?%]).{6,}";
+	public static final String ALFABETO_CONTRASEÑA4 = "[\\dA-ZÑa-zñ#$*-+&!?%]{6,}";
 
 	public static final String LETRAS_NIF = "TRWAGMYFPDXBNJZSQVHLCKE";
 	public static final String PATRON_NIF = "^[0-9]{8}[TRWAGMYFPDXBNJZSQVHLCKE]";
