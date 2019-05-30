@@ -8,15 +8,11 @@
  * @author: ajp
  */
 
-import accesoUsr.consola.control.ControlPrincipal;
+import accesoUsr.swing.control.ControlPrincipal;
 
 public class JVPrincipal {
 
 	public static void main(String[] args) {		
-		if (args.length > 0) {
-			new ControlPrincipal(args[0]);
-			return;
-		}
 		new ControlPrincipal();
 	}
 	
