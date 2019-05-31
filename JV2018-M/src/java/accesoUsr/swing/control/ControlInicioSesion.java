@@ -17,9 +17,11 @@ import java.awt.event.MouseListener;
 
 import accesoDatos.Datos;
 import accesoDatos.DatosException;
+import accesoUsr.AccesoUsrException;
 import accesoUsr.swing.vista.VistaInicioSesion;
 import config.Configuracion;
 import modelo.ClaveAcceso;
+import modelo.ModeloException;
 import modelo.SesionUsuario;
 import modelo.SesionUsuario.EstadoSesion;
 import modelo.Usuario;
@@ -100,24 +102,30 @@ public class ControlInicioSesion implements ActionListener, MouseListener {
 		// Busca usuario coincidente con las credenciales.
 		this.usrEnSesion = this.datos.obtenerUsuario(credencialUsr);
 		try {			
-			if (this.usrEnSesion != null 
-					&& this.usrEnSesion.getClaveAcceso().equals(new ClaveAcceso(clave))) {
+			if (this.usrEnSesion != null && this.usrEnSesion.getClaveAcceso().equals(new ClaveAcceso(clave))) {
 				this.vistaInicioSesion.dispose();
 				this.controlPrincipal.getVistaPrincipal().setEnabled(true);
 				this.controlPrincipal.getVistaPrincipal().requestFocus();
-				this.vistaInicioSesion.mostrarMensaje("Sesión: " + this.registrarSesion().getId()
+				SesionUsuario nuevaSesion = new SesionUsuario(this.usrEnSesion, new Fecha(), EstadoSesion.ACTIVA);
+				this.controlPrincipal.setSesion(nuevaSesion);
+				this.datos.altaSesion(nuevaSesion);
+				this.vistaInicioSesion.mostrarMensaje("Sesión: " + nuevaSesion.getId()
 						+ '\n' + "Iniciada por: " + this.usrEnSesion.getNombre());
 				return;
 			} 
-			throw new Exception();
+			throw new AccesoUsrException();
 		} 
-		catch (Exception e) {
+		catch (AccesoUsrException e) {
 			this.intentosPermitidos--;
 			this.vistaInicioSesion.mostrarMensaje("Credenciales incorrectas...\n"
 					+ "Quedan " + intentosPermitidos + " intentos. ");
 			this.vistaInicioSesion.getCampoUsuario().setText("");
 			this.vistaInicioSesion.getCampoUsuario().requestFocus();
 			this.vistaInicioSesion.getCampoClaveAcceso().setText("");
+		} 
+		catch (ModeloException | DatosException e) {
+			// Fallo ClaveAcceso() o altaSesion()
+			e.printStackTrace();
 		}
 
 		if (intentosPermitidos <= 0){
@@ -127,23 +135,6 @@ public class ControlInicioSesion implements ActionListener, MouseListener {
 		}
 	}
 
-	/**
-	 * Crea la sesion de usuario 
-	 */
-	private SesionUsuario registrarSesion() {
-		// Registra sesión.
-		// Crea la sesión de usuario en el sistema.
-		SesionUsuario nuevaSesion = null;
-		try {
-			nuevaSesion = new SesionUsuario(this.usrEnSesion, new Fecha(), EstadoSesion.ACTIVA);
-			this.controlPrincipal.setSesion(nuevaSesion);
-			this.datos.altaSesion(nuevaSesion);
-		} 
-		catch (DatosException e) {
-			e.printStackTrace();
-		}
-		return nuevaSesion;		
-	}
 
 	// Manejadores de eventos de ratón no usados.
 	@Override
