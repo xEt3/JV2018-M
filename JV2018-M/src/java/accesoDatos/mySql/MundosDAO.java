@@ -354,11 +354,48 @@ public class MundosDAO implements OperacionesDAO {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	
+	
+	/**
+	 * Actualiza un mundo de la base de datos.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
+		assert obj != null;
+		Mundo mundoActualizado = (Mundo) obj;
+		Mundo mundoPrevio = (Mundo) obtener(mundoActualizado.getId());
+		String sqlQuery = consultaUpdateQuery(mundoActualizado);
+		if (mundoPrevio != null) {
+			try {
+				this.bufferMundos.remove(mundoPrevio);
+				this.bufferMundos.add(mundoActualizado);
+				this.stMundo.executeUpdate(sqlQuery);
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		throw new DatosException("Actualizar: "+ mundoActualizado.getId() + " no existe.");
+	}
+	
+	/**
+	 * Consulta que se lanza para actualizar el mundo de la base de datos.
+	 * @param mundoActualizado
+	 * @return - Devuelve la QuerySQL para actualizar el mundo.
+	 */
+	private String consultaUpdateQuery(Mundo mundoActualizado) {
+		String distribucion = formatearDistribucion(mundoActualizado.getDistribucion());
+		int espacioX = mundoActualizado.getEspacio().length;
+		int espacioY = mundoActualizado.getEspacio()[0].length;
+		String valoresSobrevivir = formatearRegla((int[]) mundoActualizado.getConstantes().get("ValoresSobrevivir"));
+		String valoresRenacer = formatearRegla((int[]) mundoActualizado.getConstantes().get("ValoresRenacer"));
+		String tipoMundo = formatearTipoMundo(mundoActualizado.getTipoMundo());
+		StringBuilder query = new StringBuilder();
 		
+		query.append("UPDATE MUNDO SET distribucion = '" + distribucion + "', espacioX = '" + espacioX + "', espacioY = '" + espacioY
+				+ "', valoresSobrevivir = '" + valoresSobrevivir + "', valoresRenacer = '" + valoresRenacer	+ "', tipoMundo ='" + tipoMundo
+				+ "' WHERE nombre LIKE'"+ mundoActualizado.getNombre()+"'");
+		return query.toString();
 	}
 
 	@Override
