@@ -99,13 +99,13 @@ public class MundosDAO implements OperacionesDAO {
 
 	private void crearTablaMundo() {
 		try {
-			stMundo.executeQuery("CREATE TABLE MUNDO(" + 
-					"  nombre VARCHAR NOT NULL PRIMARY KEY," + 
+			stMundo.executeQuery("CREATE TABLE IF NOT EXISTS MUNDO(" + 
+					"  nombre VARCHAR(100) NOT NULL PRIMARY KEY," + 
 					"  espacioX INT NOT NULL," + 
 					"  espacioY INT NOT NULL," + 
-					"  distribucion VARCHAR NOT NULL," + 
-					"  valoresSobrevivir VARCHAR NOT NULL," + 
-					"  valoresRenacer VARCHAR NOT NULL," + 
+					"  distribucion VARCHAR(255) NOT NULL," + 
+					"  valoresSobrevivir VARCHAR(100) NOT NULL," + 
+					"  valoresRenacer VARCHAR(100) NOT NULL," + 
 					"  tipoMundo ENUM(\"PLANO\",\"ESFERICO\") NOT NULL" + 
 					")");
 		} catch (SQLException e) {
@@ -315,8 +315,38 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void alta(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
+		assert obj != null;
+		Mundo mundo = (Mundo)obj;
 		
+		String sqlQuery = consultaAltaQuery(mundo);
+		
+		if (obtener(mundo.getId()) == null) {
+			try {
+				Statement statement = db.createStatement();
+				statement.executeUpdate(sqlQuery);
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			throw new DatosException("Mundo dado de Alta ya existe con el nombre: " + mundo.getId());
+		}
+		
+	}
+	
+	private String consultaAltaQuery(Mundo mundo) {
+		StringBuilder sqlQuery = new StringBuilder();
+		sqlQuery.append("INSERT INTO MUNDO (nombre, espacioX, espacioY, distribucion,ValoresSobrevivir, ValoresRenacer, tipoMundo) VALUES "
+				+ "('" + mundo.getNombre() 
+				+ "'," + mundo.getEspacio().length 
+				+ "," + mundo.getEspacio()[0].length 
+				+ ",'" + formatearDistribucion(mundo.getDistribucion())
+				+"','" + formatearRegla((int[]) mundo.getConstantes().get("ValoresSobrevivir")) 
+				+ "','"+ formatearRegla((int[]) mundo.getConstantes().get("ValoresRenacer")) 
+				+ "','" + formatearTipoMundo(mundo.getTipoMundo()) +"')");
+		
+		return sqlQuery.toString();
 	}
 
 	@Override
@@ -351,20 +381,26 @@ public class MundosDAO implements OperacionesDAO {
 	
 	private String formatearDistribucion(List<Posicion> distibucion) {
 		StringBuilder valorFormateado = new StringBuilder();
+		
 		for (int i = 0; i < distibucion.size(); i++) {
 			int x = distibucion.get(i).getX();
 			int y = distibucion.get(i).getY();
-			valorFormateado.append(x+y+",");
+			valorFormateado.append(x + y + ",");
+		}
+		if (valorFormateado.length() == 0) {
+			return valorFormateado.append("0").toString();
 		}
 		return valorFormateado.toString();
 	}
 	
 	private String formatearRegla(int[] reglas) {
 		StringBuilder reglaFormateada = new StringBuilder();
-		for (int i = 0; i < reglas.length; i++) {
-			reglaFormateada.append(reglas[i]+",");
-		}
-		return reglaFormateada.toString();
+        String valoresFormateados;
+        for (int i = 0; i < reglas.length; i++) {
+            reglaFormateada.append(reglas[i] + ",");
+        }
+        valoresFormateados = reglaFormateada.substring(0,reglaFormateada.length() - 1);
+        return valoresFormateados;
 	}
 
 	private String formatearTipoMundo(FormaEspacio tipoMundo) {
