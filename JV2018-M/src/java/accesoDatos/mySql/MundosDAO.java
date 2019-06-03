@@ -99,7 +99,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	private void crearTablaMundo() {
 		try {
-			stMundo.executeQuery("CREATE TABLE IF NOT EXISTS MUNDO(" + 
+			stMundo.executeUpdate("CREATE TABLE IF NOT EXISTS MUNDO(" + 
 					"  nombre VARCHAR(100) NOT NULL PRIMARY KEY," + 
 					"  espacioX INT NOT NULL," + 
 					"  espacioY INT NOT NULL," + 
@@ -172,7 +172,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	private void ejecutarConsuta(String idMundo) {
 		try {
-			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = "+idMundo+"");
+			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = '"+idMundo+"'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -254,6 +254,9 @@ public class MundosDAO implements OperacionesDAO {
 	private List<Posicion> obtenerDistribucion(String distribucionFormateada) {
 		String[] coordenadas = distribucionFormateada.split(",");
 		List<Posicion> distribucion = new LinkedList<Posicion>();
+		if(coordenadas[0].length()==1) {
+			return distribucion;
+		}
 		for (int i = 0; i < coordenadas.length; i++) {
 			int x = coordenadas[i].charAt(0);
 			int y = coordenadas[i].charAt(1);
@@ -318,7 +321,7 @@ public class MundosDAO implements OperacionesDAO {
 		assert obj != null;
 		Mundo mundo = (Mundo)obj;
 		
-		String sqlQuery = consultaAltaQuery(mundo);
+		String sqlQuery = obtenerConsultaAlta(mundo);
 		
 		if (obtener(mundo.getId()) == null) {
 			try {
@@ -335,7 +338,12 @@ public class MundosDAO implements OperacionesDAO {
 		
 	}
 	
-	private String consultaAltaQuery(Mundo mundo) {
+	/**
+	 * Consulta que se lanza para dar de alta el mundo en la base de datos.
+	 * @param mundo
+	 * @return - Devuelve la QuerySQL para dar de alta el mundo.
+	 */
+	private String obtenerConsultaAlta(Mundo mundo) {
 		StringBuilder sqlQuery = new StringBuilder();
 		sqlQuery.append("INSERT INTO MUNDO (nombre, espacioX, espacioY, distribucion,ValoresSobrevivir, ValoresRenacer, tipoMundo) VALUES "
 				+ "('" + mundo.getNombre() 
@@ -379,7 +387,7 @@ public class MundosDAO implements OperacionesDAO {
 		assert obj != null;
 		Mundo mundoActualizado = (Mundo) obj;
 		Mundo mundoPrevio = (Mundo) obtener(mundoActualizado.getId());
-		String sqlQuery = consultaUpdateQuery(mundoActualizado);
+		String sqlQuery = obtenerConsultaActualizar(mundoActualizado);
 		if (mundoPrevio != null) {
 			try {
 				this.bufferMundos.remove(mundoPrevio);
@@ -398,7 +406,7 @@ public class MundosDAO implements OperacionesDAO {
 	 * @param mundoActualizado
 	 * @return - Devuelve la QuerySQL para actualizar el mundo.
 	 */
-	private String consultaUpdateQuery(Mundo mundoActualizado) {
+	private String obtenerConsultaActualizar(Mundo mundoActualizado) {
 		String distribucion = formatearDistribucion(mundoActualizado.getDistribucion());
 		int espacioX = mundoActualizado.getEspacio().length;
 		int espacioY = mundoActualizado.getEspacio()[0].length;
