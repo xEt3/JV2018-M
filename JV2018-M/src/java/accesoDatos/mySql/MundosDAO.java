@@ -351,8 +351,23 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public Object baja(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+		assert id != null;
+		assert !id.matches("");
+		assert !id.matches("[ ]+");
+		
+		Mundo mundo = (Mundo) obtener(id);
+		
+		if (mundo != null) {
+			try {
+				bufferMundos.remove(mundo);
+				String sql = "DELETE FROM MUNDO WHERE Nombre='" + id + "'";
+				stMundo.executeUpdate(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return mundo;
+		}
+		throw new DatosException("Baja: " + id + " no existe...");
 	}
 	
 	
