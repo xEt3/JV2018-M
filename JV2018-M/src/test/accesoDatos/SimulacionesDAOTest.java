@@ -1,4 +1,4 @@
-package accesoDatos.db4o;
+package accesoDatos;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,6 +9,9 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import accesoDatos.db4o.MundosDAO;
+import accesoDatos.db4o.SimulacionesDAO;
+import accesoDatos.db4o.UsuariosDAO;
 import config.Configuracion;
 import modelo.ClaveAcceso;
 import modelo.Correo;

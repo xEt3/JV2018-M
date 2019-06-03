@@ -12,7 +12,7 @@
  *  @author: Atanas Genvech
  */
 
-package accesoDatos.db4o;
+package accesoDatos;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -30,6 +30,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import accesoDatos.DatosException;
+import accesoDatos.db4o.Conexion;
+import accesoDatos.db4o.MundosDAO;
 import modelo.ModeloException;
 import modelo.Mundo;
 import modelo.Mundo.FormaEspacio;

@@ -10,7 +10,7 @@
  * @author: Jesús Pérez Robles (jebles)
  */
 
-package accesoDatos.db4o;
+package accesoDatos;
 
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
