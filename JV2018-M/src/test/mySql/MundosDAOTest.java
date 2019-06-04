@@ -77,7 +77,7 @@ public class MundosDAOTest {
 		try {
 			Mundo mundo = new Mundo("Demo2", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
 			mundoDAO1.alta(mundo);
-			mundoDAO1.baja(mundo.getId());
+			//mundoDAO1.baja(mundo.getId());
 			assertNull(mundoDAO1.obtener(mundo.getId()));
 		} 
 		catch (DatosException | ModeloException e) {
