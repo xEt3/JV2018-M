@@ -99,13 +99,13 @@ public class MundosDAO implements OperacionesDAO {
 
 	private void crearTablaMundo() {
 		try {
-			stMundo.executeQuery("CREATE TABLE MUNDO(" + 
-					"  nombre VARCHAR NOT NULL PRIMARY KEY," + 
+			stMundo.executeUpdate("CREATE TABLE IF NOT EXISTS MUNDO(" + 
+					"  nombre VARCHAR(100) NOT NULL PRIMARY KEY," + 
 					"  espacioX INT NOT NULL," + 
 					"  espacioY INT NOT NULL," + 
-					"  distribucion VARCHAR NOT NULL," + 
-					"  valoresSobrevivir VARCHAR NOT NULL," + 
-					"  valoresRenacer VARCHAR NOT NULL," + 
+					"  distribucion VARCHAR(255) NOT NULL," + 
+					"  valoresSobrevivir VARCHAR(100) NOT NULL," + 
+					"  valoresRenacer VARCHAR(100) NOT NULL," + 
 					"  tipoMundo ENUM(\"PLANO\",\"ESFERICO\") NOT NULL" + 
 					")");
 		} catch (SQLException e) {
@@ -172,7 +172,7 @@ public class MundosDAO implements OperacionesDAO {
 
 	private void ejecutarConsuta(String idMundo) {
 		try {
-			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = "+idMundo+"");
+			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = '"+idMundo+"'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -254,6 +254,9 @@ public class MundosDAO implements OperacionesDAO {
 	private List<Posicion> obtenerDistribucion(String distribucionFormateada) {
 		String[] coordenadas = distribucionFormateada.split(",");
 		List<Posicion> distribucion = new LinkedList<Posicion>();
+		if(coordenadas[0].length()==1) {
+			return distribucion;
+		}
 		for (int i = 0; i < coordenadas.length; i++) {
 			int x = coordenadas[i].charAt(0);
 			int y = coordenadas[i].charAt(1);
@@ -315,20 +318,107 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void alta(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
+		assert obj != null;
+		Mundo mundo = (Mundo)obj;
 		
+		String sqlQuery = obtenerConsultaAlta(mundo);
+		
+		if (obtener(mundo.getId()) == null) {
+			try {
+				Statement statement = db.createStatement();
+				statement.executeUpdate(sqlQuery);
+			} 
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		else {
+			throw new DatosException("Mundo dado de Alta ya existe con el nombre: " + mundo.getId());
+		}
+		
+	}
+	
+	/**
+	 * Consulta que se lanza para dar de alta el mundo en la base de datos.
+	 * @param mundo
+	 * @return - Devuelve la QuerySQL para dar de alta el mundo.
+	 */
+	private String obtenerConsultaAlta(Mundo mundo) {
+		StringBuilder sqlQuery = new StringBuilder();
+		sqlQuery.append("INSERT INTO MUNDO (nombre, espacioX, espacioY, distribucion,ValoresSobrevivir, ValoresRenacer, tipoMundo) VALUES "
+				+ "('" + mundo.getNombre() 
+				+ "'," + mundo.getEspacio().length 
+				+ "," + mundo.getEspacio()[0].length 
+				+ ",'" + formatearDistribucion(mundo.getDistribucion())
+				+"','" + formatearRegla((int[]) mundo.getConstantes().get("ValoresSobrevivir")) 
+				+ "','"+ formatearRegla((int[]) mundo.getConstantes().get("ValoresRenacer")) 
+				+ "','" + formatearTipoMundo(mundo.getTipoMundo()) +"')");
+		
+		return sqlQuery.toString();
 	}
 
 	@Override
 	public Object baja(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+		assert id != null;
+		assert !id.matches("");
+		assert !id.matches("[ ]+");
+		
+		Mundo mundo = (Mundo) obtener(id);
+		
+		if (mundo != null) {
+			try {
+				bufferMundos.remove(mundo);
+				String sql = "DELETE FROM MUNDO WHERE Nombre='" + id + "'";
+				stMundo.executeUpdate(sql);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			return mundo;
+		}
+		throw new DatosException("Baja: " + id + " no existe...");
 	}
-
+	
+	
+	/**
+	 * Actualiza un mundo de la base de datos.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
+		assert obj != null;
+		Mundo mundoActualizado = (Mundo) obj;
+		Mundo mundoPrevio = (Mundo) obtener(mundoActualizado.getId());
+		String sqlQuery = obtenerConsultaActualizar(mundoActualizado);
+		if (mundoPrevio != null) {
+			try {
+				this.bufferMundos.remove(mundoPrevio);
+				this.bufferMundos.add(mundoActualizado);
+				this.stMundo.executeUpdate(sqlQuery);
+			}
+			catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		throw new DatosException("Actualizar: "+ mundoActualizado.getId() + " no existe.");
+	}
+	
+	/**
+	 * Consulta que se lanza para actualizar el mundo de la base de datos.
+	 * @param mundoActualizado
+	 * @return - Devuelve la QuerySQL para actualizar el mundo.
+	 */
+	private String obtenerConsultaActualizar(Mundo mundoActualizado) {
+		String distribucion = formatearDistribucion(mundoActualizado.getDistribucion());
+		int espacioX = mundoActualizado.getEspacio().length;
+		int espacioY = mundoActualizado.getEspacio()[0].length;
+		String valoresSobrevivir = formatearRegla((int[]) mundoActualizado.getConstantes().get("ValoresSobrevivir"));
+		String valoresRenacer = formatearRegla((int[]) mundoActualizado.getConstantes().get("ValoresRenacer"));
+		String tipoMundo = formatearTipoMundo(mundoActualizado.getTipoMundo());
+		StringBuilder query = new StringBuilder();
 		
+		query.append("UPDATE MUNDO SET distribucion = '" + distribucion + "', espacioX = '" + espacioX + "', espacioY = '" + espacioY
+				+ "', valoresSobrevivir = '" + valoresSobrevivir + "', valoresRenacer = '" + valoresRenacer	+ "', tipoMundo ='" + tipoMundo
+				+ "' WHERE nombre LIKE'"+ mundoActualizado.getNombre()+"'");
+		return query.toString();
 	}
 
 	@Override
@@ -351,20 +441,26 @@ public class MundosDAO implements OperacionesDAO {
 	
 	private String formatearDistribucion(List<Posicion> distibucion) {
 		StringBuilder valorFormateado = new StringBuilder();
+		
 		for (int i = 0; i < distibucion.size(); i++) {
 			int x = distibucion.get(i).getX();
 			int y = distibucion.get(i).getY();
-			valorFormateado.append(x+y+",");
+			valorFormateado.append(x + y + ",");
+		}
+		if (valorFormateado.length() == 0) {
+			return valorFormateado.append("0").toString();
 		}
 		return valorFormateado.toString();
 	}
 	
 	private String formatearRegla(int[] reglas) {
 		StringBuilder reglaFormateada = new StringBuilder();
-		for (int i = 0; i < reglas.length; i++) {
-			reglaFormateada.append(reglas[i]+",");
-		}
-		return reglaFormateada.toString();
+        String valoresFormateados;
+        for (int i = 0; i < reglas.length; i++) {
+            reglaFormateada.append(reglas[i] + ",");
+        }
+        valoresFormateados = reglaFormateada.substring(0,reglaFormateada.length() - 1);
+        return valoresFormateados;
 	}
 
 	private String formatearTipoMundo(FormaEspacio tipoMundo) {

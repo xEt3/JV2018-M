@@ -42,9 +42,7 @@ public class Mundo implements Identificable, Serializable {
 		setEspacio(espacio);
 		setDistribucion(distribucion);
 		setConstantes(constantes);
-		setTipoMundo(tipoMundo);
-		
-		establecerTamañoMundo();	
+		setTipoMundo(tipoMundo);	
 		establecerLeyes();
 	}
 
@@ -117,6 +115,7 @@ public class Mundo implements Identificable, Serializable {
 	public void setEspacio(byte[][] espacio) {
 		assert espacio != null;
 		this.espacio = espacio;
+		establecerTamañoMundo();
 	}
 	
 	public void setConstantes(Map constantes) {
