@@ -98,7 +98,7 @@ public class SesionesDAO implements OperacionesDAO {
 					"CREATE TABLE IF NOT EXISTS `sesiones` ("
 					+ "`id_usuario` VARCHAR(45) NOT NULL,"
 					+ "`fecha` TIMESTAMP NOT NULL,"
-					+ "`estado` ENUM('EN_PREPARACION', 'ACTIVA', 'CERRADA') NOT NULL,"
+					+ "`estado` VARCHAR(20) NOT NULL,"
 					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
 			e.printStackTrace();
