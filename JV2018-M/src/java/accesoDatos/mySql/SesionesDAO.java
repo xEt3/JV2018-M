@@ -91,7 +91,7 @@ public class SesionesDAO implements OperacionesDAO {
 			stSesiones.executeQuery(
 					"CREATE TABLE IF NOT EXISTS `sesiones` ("
 					+ "`id_usuario` VARCHAR(45) NOT NULL,"
-					+ "`fecha` TIMESTAMP NOT NULL,"
+					+ "`fecha` DATETIME NOT NULL,"
 					+ "`estado` VARCHAR(20) NOT NULL,"
 					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
@@ -153,7 +153,7 @@ public class SesionesDAO implements OperacionesDAO {
 				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones'");
 			} else if (id.contains(":")) { // Si la id contiene el formato de una id de sesion.
 				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' "
-						+ "WHERE CONCAT(id_usuario,':',DATEFORMAT(fecha,'%Y%m%d%k%i%s'))=" + id);
+						+ "WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s'))=" + id);
 			} else { // Si la id concuerda con la id de usuario.
 				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' WHERE id_usuario=" + id);
 			}
