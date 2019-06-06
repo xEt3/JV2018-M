@@ -1,6 +1,6 @@
 /** Proyecto: Juego de la vida.
  *  Resuelve todos los aspectos relacionados con la presentación del inicio de sesión de usuario. 
- *  Colabora en el patrón MVC.
+ *  Colabora en el patrón MVP.
  *  @since: prototipo2.1
  *  @source: VistaInicioSesion.java 
  *  @version: 2.1 - 2019.05.06

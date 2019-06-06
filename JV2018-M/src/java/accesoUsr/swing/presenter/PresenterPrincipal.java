@@ -1,22 +1,22 @@
 /** Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos relacionados con el control 
- *  principal del programa con un menú. Colabora en el patron MVC
+ *  Resuelve todos los aspectos relacionados con el estado, 
+ *  sincronización y lógica de presentación principal del programa.
+ *  Colabora en el patrón MVP.
  *  @since: prototipo2.1
- *  @source: ControlPrincipal.java 
+ *  @source: PresenterPrincipal.java 
  *  @version: 2.2 - 2019.05.17
  *  @author: ajp
  */
 
-package accesoUsr.swing.control;
+package accesoUsr.swing.presenter;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import accesoDatos.Datos;
-import accesoUsr.consola.control.ControlSimulacion;
+import accesoUsr.swing.presenter.PresenterEjecucionSimulacion;
 import accesoUsr.swing.vista.VistaPrincipal;
 import config.Configuracion;
 import modelo.SesionUsuario;
@@ -24,13 +24,13 @@ import modelo.Simulacion;
 import modelo.Simulacion.EstadoSimulacion;
 import util.Fecha;
 
-public class ControlPrincipal implements ActionListener, WindowListener {
+public class PresenterPrincipal implements ActionListener, WindowListener {
 
 	private VistaPrincipal vistaPrincipal;
 	private SesionUsuario sesion;
 	private Datos datos;
 
-	public ControlPrincipal() {
+	public PresenterPrincipal() {
 		initControlPrincipal();	
 	}
 
@@ -41,7 +41,7 @@ public class ControlPrincipal implements ActionListener, WindowListener {
 		this.vistaPrincipal.pack();
 		this.vistaPrincipal.setVisible(true);
 		this.vistaPrincipal.setEnabled(false);
-		new ControlInicioSesion(this);	
+		new PresenterInicioSesion(this);	
 	}
 	public void setSesion(SesionUsuario sesion) {
 		assert sesion != null;
@@ -198,7 +198,7 @@ public class ControlPrincipal implements ActionListener, WindowListener {
 				this.datos.obtenerMundo(Configuracion.get().getProperty("mundo.nombrePredeterminado")),
 				Integer.parseInt(Configuracion.get().getProperty("simulacion.ciclosPredeterminados")),
 				EstadoSimulacion.PREPARADA);
-		new ControlSimulacion(demo);
+		new PresenterEjecucionSimulacion(demo);
 	}
 
 	// Mundos

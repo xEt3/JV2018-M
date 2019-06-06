@@ -1,6 +1,7 @@
 /** Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos relacionados con la presentación 
- *  principal del programa con un menú. Colabora en el patron MVC
+ *  Resuelve todos los aspectos relacionados con la visualización 
+ *  principal del programa con interfaz gráfico. 
+ *  Colabora en el patrón MVP.
  *  @since: prototipo2.1
  *  @source: VistaPrincipal.java 
  *  @version: 2.2 - 2019.05.17

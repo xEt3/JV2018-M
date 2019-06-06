@@ -10,16 +10,16 @@
 
 package _main;
 
-import accesoUsr.consola.control.ControlPrincipal;
+import accesoUsr.consola.presenter.PresenterPrincipal;
 
 public class JVPrincipalConsola {
 
 	public static void main(String[] args) {		
 		if (args.length > 0) {
-			new ControlPrincipal(args[0]);
+			new PresenterPrincipal(args[0]);
 			return;
 		}
-		new ControlPrincipal();
+		new PresenterPrincipal();
 	}
 	
 } //class

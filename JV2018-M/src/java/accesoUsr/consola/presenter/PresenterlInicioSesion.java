@@ -1,13 +1,14 @@
 /** Proyecto: Juego de la vida.
- *  Resuelve todos los aspectos relacionados con el control 
- *  de inicio de sesión de usuario. Colabora en el patrón MVC
+ *  Resuelve todos los aspectos relacionados con el estado, 
+ *  sincronización y lógica de presentación del inicio de sesión de usuario.
+ *  Colabora en el patrón MVP.
  *  @since: prototipo2.1
- *  @source: ControlInicioSesion.java 
+ *  @source: PresenterInicioSesion.java 
  *  @version: 2.1 - 2019.05.06
  *  @author: ajp
  */
 
-package accesoUsr.consola.control;
+package accesoUsr.consola.presenter;
 
 import accesoDatos.Datos;
 import accesoDatos.DatosException;
@@ -20,17 +21,17 @@ import modelo.SesionUsuario.EstadoSesion;
 import modelo.Usuario;
 import util.Fecha;
 
-public class ControlInicioSesion {
+public class PresenterlInicioSesion {
 	private VistaInicioSesion vistaSesion;
 	private Usuario usrEnSesion;
 	private SesionUsuario sesion;
 	private Datos fachada;
 
-	public ControlInicioSesion() {
+	public PresenterlInicioSesion() {
 		this(null);
 	}
 
-	public ControlInicioSesion(String idUsr) {
+	public PresenterlInicioSesion(String idUsr) {
 		initControlSesion(idUsr);
 	}
 
@@ -47,7 +48,7 @@ public class ControlInicioSesion {
 	 * @param credencialUsr ya obtenida, puede ser null.
 	 */
 	private void iniciarSesionUsuario(String idUsr) {
-		int intentosPermitidos = new Integer(Configuracion.get().getProperty("sesion.intentosPermitidos"));
+		int intentosPermitidos = Integer.parseInt(Configuracion.get().getProperty("sesion.intentosPermitidos"));
 		String credencialUsr = idUsr;
 		do {
 			if (idUsr == null) {
@@ -55,8 +56,8 @@ public class ControlInicioSesion {
 				credencialUsr = vistaSesion.pedirIdUsr();	
 			}
 			credencialUsr = credencialUsr.toUpperCase();
-			String clave = vistaSesion.pedirClaveAcceso();
-			vistaSesion.mostrarMensaje(credencialUsr);		
+			vistaSesion.mostrarMensaje("Usuario id: " + credencialUsr);
+			String clave = vistaSesion.pedirClaveAcceso();		
 			try {
 				// Busca usuario coincidente con las credenciales.
 				usrEnSesion = fachada.obtenerUsuario(credencialUsr);			
@@ -65,7 +66,7 @@ public class ControlInicioSesion {
 					registrarSesion();
 					return;
 				} 
-				throw new ModeloException();
+				throw new ModeloException();	// Error en el id de usuario.		
 			} 
 			catch (ModeloException e) {
 				intentosPermitidos--;

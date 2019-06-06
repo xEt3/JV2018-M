@@ -9,12 +9,12 @@ package _main;
  * @author: ajp
  */
 
-import accesoUsr.swing.control.ControlPrincipal;
+import accesoUsr.swing.presenter.PresenterPrincipal;
 
 public class JVPrincipalSwing {
 
 	public static void main(String[] args) {		
-		new ControlPrincipal();
+		new PresenterPrincipal();
 	}
 	
 } //class
