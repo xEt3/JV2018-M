@@ -27,7 +27,10 @@ import java.sql.Statement;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import modelo.SesionUsuario;
+import accesoDatos.db4o.UsuariosDAO; // TODO Eliminar una vez esté la clase creada, este import ha sido añadido únicamente para prevenir errores del compilador.
+import modelo.*;
+import modelo.SesionUsuario.EstadoSesion;
+import util.*;
 
 public class SesionesDAO implements OperacionesDAO {
 
@@ -91,12 +94,12 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	private void crearTablaSesiones() {
 		try {
-			stSesiones.executeQuery("CREATE TABLE IF NOT EXISTS `sesiones` (" + 
-					"`id_usuario` VARCHAR(45) NOT NULL," + 
-					"`fecha` TIMESTAMP NOT NULL," + 
-					"`estado` ENUM('EN_PREPARACION', 'ACTIVA', 'CERRADA') NOT NULL," + 
-					"PRIMARY KEY (`id_usuario`, `fecha`))"
-					);
+			stSesiones.executeQuery(
+					"CREATE TABLE IF NOT EXISTS `sesiones` ("
+					+ "`id_usuario` VARCHAR(45) NOT NULL,"
+					+ "`fecha` TIMESTAMP NOT NULL,"
+					+ "`estado` ENUM('EN_PREPARACION', 'ACTIVA', 'CERRADA') NOT NULL,"
+					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -110,7 +113,10 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public SesionUsuario obtener(String idSesion) {
-		// TODO SesionUsuario.obtener
+		List<SesionUsuario> lista = obtenerMultiproposito(idSesion);
+		if (lista.size() > 0) {
+			return lista.get(0);
+		}
 		return null;
 	}
 
@@ -120,9 +126,9 @@ public class SesionesDAO implements OperacionesDAO {
 	 * @return lista de Sesiones de Usuario
 	 */
 	@Override
-	public List obtenerTodos() {
-		// TODO SesionUsuario.obtenerTodos
-		return null;
+	public List<SesionUsuario> obtenerTodos() {
+		List<SesionUsuario> lista = obtenerMultiproposito(null);
+		return lista;
 	}
 
 	/**
@@ -132,8 +138,55 @@ public class SesionesDAO implements OperacionesDAO {
 	 * @return - las sesiones encontradas.
 	 */
 	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr) {
-		// TODO SesionUsuario.obtenerTodasMismoUsr
-		return null;
+		List<SesionUsuario> lista = obtenerMultiproposito(idUsr);
+		return lista;
+	}
+
+	/**
+	 * Método obtener que se encarga de buscar en la base de datos según el tipo de
+	 * identificador que le es introducido. Creado para evitar repetición de código.
+	 * 
+	 * @param id - identificador a buscar, si contiene ":" lo detectará como id de
+	 *           sesión, si no, como id de usuario, y si es nulo, devolverá todas
+	 *           las sesiones que existan.
+	 * @return Lista de Sesiones de usuario encontradas
+	 */
+	private List<SesionUsuario> obtenerMultiproposito(String id) {
+		ArrayList<SesionUsuario> listaSesiones = new ArrayList<SesionUsuario>();
+		Usuario usr = null;
+		try {
+			if (id == null) { // Si la id es null, devolverá todo.
+				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones'");
+			} else if (id.contains(":")) { // Si la id contiene el formato de una id de sesion.
+				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' "
+						+ "WHERE CONCAT(id_usuario,':',DATEFORMAT(fecha,'%Y%m%d%k%i%s'))=" + id);
+			} else { // Si la id concuerda con la id de usuario.
+				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' WHERE id_usuario=" + id);
+			}
+
+			while (rsSesiones.next()) {
+				usr = UsuariosDAO.getInstance().obtener((rsSesiones.getString("id_usuario")));
+				String estadoString = rsSesiones.getString("estado");
+				EstadoSesion estado = null;
+				switch (estadoString) {
+				case "EN_PREPARACION":
+					estado = SesionUsuario.EstadoSesion.EN_PREPARACION;
+					break;
+				case "ACTIVA":
+					estado = SesionUsuario.EstadoSesion.ACTIVA;
+					break;
+				case "CERRADA":
+					estado = SesionUsuario.EstadoSesion.CERRADA;
+					break;
+				}
+
+				listaSesiones.add(new SesionUsuario(usr, new Fecha(rsSesiones.getString("fecha")), estado));
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return listaSesiones;
 	}
 
 	/**
