@@ -174,8 +174,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public String listarDatos() {
-		// TODO SesionUsuario.listarDatos
-		return null;
+		StringBuffer result = new StringBuffer();
+		List<SesionUsuario> listaSsn = obtenerTodos();
+		for (SesionUsuario sesionUsuario : listaSsn) {
+			result.append(sesionUsuario.toString() + ("\n"));
+		}
+
+		return result.toString();
 	}
 
 	/**
@@ -183,8 +188,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public String listarId() {
-		// TODO SesionUsuario.listarId
-		return null;
+		StringBuffer result = new StringBuffer();
+		List<SesionUsuario> listaSsn = obtenerTodos();
+		for (SesionUsuario sesionUsuario : listaSsn) {
+			result.append(sesionUsuario.getId() + ("\n"));
+		}
+
+		return result.toString();
 	}
 
 	/**
