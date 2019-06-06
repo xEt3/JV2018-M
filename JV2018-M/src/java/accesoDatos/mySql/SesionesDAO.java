@@ -17,12 +17,9 @@ package accesoDatos.mySql;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.table.DefaultTableModel;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
@@ -44,8 +41,6 @@ public class SesionesDAO implements OperacionesDAO {
 
 	// Atributos de procesamiento de la base de datos.
 	private Statement stSesiones;
-	private ArrayList<Object> bufferSesiones;
-	private DefaultTableModel tmSesiones;
 	private ResultSet rsSesiones;
 
 	// Constructor
@@ -86,9 +81,6 @@ public class SesionesDAO implements OperacionesDAO {
 			crearTablaSesiones();
 		} catch (SQLException e) {
 		}
-
-		tmSesiones = new DefaultTableModel();
-		bufferSesiones = new ArrayList<>();
 	}
 
 	/**
@@ -285,7 +277,12 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void borrarTodo() {
-		// TODO SesionUsuario.borrarTodo
+		try {
+			stSesiones.executeQuery(
+					"TRUNCATE TABLE `sesiones`");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
