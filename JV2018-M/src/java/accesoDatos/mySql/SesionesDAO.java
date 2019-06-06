@@ -20,10 +20,12 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
@@ -98,7 +100,7 @@ public class SesionesDAO implements OperacionesDAO {
 					"CREATE TABLE IF NOT EXISTS `sesiones` ("
 					+ "`id_usuario` VARCHAR(45) NOT NULL,"
 					+ "`fecha` TIMESTAMP NOT NULL,"
-					+ "`estado` ENUM('EN_PREPARACION', 'ACTIVA', 'CERRADA') NOT NULL,"
+					+ "`estado` VARCHAR(20) NOT NULL,"
 					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -197,7 +199,35 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void alta(Object obj) throws DatosException {
-		// TODO SesionUsuario.alta
+		assert obj != null;
+		SesionUsuario sesionNueva = (SesionUsuario) obj;
+
+		if (obtener(sesionNueva.getId()) == null) {
+			
+			//insert sesion
+			String query = "insert into sesiones values (?,?,?);";
+			Timestamp ts = new Timestamp(sesionNueva.getFecha().getMarcaTiempoMilisegundos());  
+			
+			try {
+				//preparar inserción
+				PreparedStatement prepStm = db.prepareStatement(query);
+				prepStm.setString(1, sesionNueva.getId());
+				prepStm.setTimestamp(2, ts);
+				prepStm.setString(3, sesionNueva.getEstado().toString());
+				
+				// insertar
+				prepStm.execute();
+
+				db.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			//
+		} else {
+			throw new DatosException("SesionesDAO.alta: " + sesionNueva.getId() + " ya existe");
+		}
 	}
 
 	/**
@@ -227,8 +257,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public String listarDatos() {
-		// TODO SesionUsuario.listarDatos
-		return null;
+		StringBuffer result = new StringBuffer();
+		List<SesionUsuario> listaSsn = obtenerTodos();
+		for (SesionUsuario sesionUsuario : listaSsn) {
+			result.append(sesionUsuario.toString() + ("\n"));
+		}
+
+		return result.toString();
 	}
 
 	/**
@@ -236,8 +271,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public String listarId() {
-		// TODO SesionUsuario.listarId
-		return null;
+		StringBuffer result = new StringBuffer();
+		List<SesionUsuario> listaSsn = obtenerTodos();
+		for (SesionUsuario sesionUsuario : listaSsn) {
+			result.append(sesionUsuario.getId() + ("\n"));
+		}
+
+		return result.toString();
 	}
 
 	/**
