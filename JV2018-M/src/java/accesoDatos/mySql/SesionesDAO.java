@@ -29,7 +29,6 @@ import java.sql.Timestamp;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.db4o.UsuariosDAO; // TODO Eliminar una vez esté la clase creada, este import ha sido añadido únicamente para prevenir errores del compilador.
 import modelo.*;
 import modelo.SesionUsuario.EstadoSesion;
 import util.*;
