@@ -435,8 +435,12 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-		
+		try {
+			stMundo = db.createStatement();
+			stMundo.executeQuery("DELETE FROM MUNDO");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private String formatearDistribucion(List<Posicion> distibucion) {
