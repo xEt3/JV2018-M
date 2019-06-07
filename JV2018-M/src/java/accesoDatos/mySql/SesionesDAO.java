@@ -289,10 +289,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void borrarTodo() {
-		try {
-			stSesiones.executeQuery("TRUNCATE TABLE `sesiones`");
-		} catch (SQLException e) {
-			e.printStackTrace();
+		List<SesionUsuario> listaSesiones = obtenerTodos();
+		for (SesionUsuario sesion : listaSesiones) {
+			try {
+				baja(sesion.getId());
+			} catch (DatosException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
