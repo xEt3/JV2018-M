@@ -92,7 +92,7 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	private void crearTablaSesiones() {
 		try {
-			stSesiones.executeQuery("CREATE TABLE IF NOT EXISTS `sesiones` (" + "`id_usuario` VARCHAR(45) NOT NULL,"
+			stSesiones.executeUpdate("CREATE TABLE IF NOT EXISTS `sesiones` (" + "`id_usuario` VARCHAR(45) NOT NULL,"
 					+ "`fecha` DATETIME NOT NULL," + "`estado` VARCHAR(20) NOT NULL,"
 					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
