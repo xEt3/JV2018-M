@@ -110,8 +110,8 @@ public class SesionesDAO implements OperacionesDAO {
 	public SesionUsuario obtener(String idSesion) {
 		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
 		try {
-			rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' "
-					+ "WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s'))=" + idSesion);
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones "
+					+ "WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s'))=" + idSesion);
 			lista = obtener(rsSesiones);
 			if (lista.size() > 0) {
 				return lista.get(0);
@@ -131,7 +131,7 @@ public class SesionesDAO implements OperacionesDAO {
 	public List<SesionUsuario> obtenerTodos() {
 		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
 		try {
-			rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones'");
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones");
 			lista = obtener(rsSesiones);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -148,7 +148,7 @@ public class SesionesDAO implements OperacionesDAO {
 	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr) {
 		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
 		try {
-			rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' WHERE id_usuario=" + idUsr);
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones WHERE id_usuario=" + idUsr);
 			lista = obtener(rsSesiones);
 		} catch (SQLException e) {
 			e.printStackTrace();
