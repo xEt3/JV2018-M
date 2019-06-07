@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
+import accesoDatos.Datos;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.*;
@@ -38,6 +39,9 @@ public class SesionesDAO implements OperacionesDAO {
 	// Base de datos
 	private Connection db;
 
+	// Fachada de datos
+	private Datos datos;
+
 	// Atributos de procesamiento de la base de datos.
 	private Statement stSesiones;
 	private ResultSet rsSesiones;
@@ -45,6 +49,7 @@ public class SesionesDAO implements OperacionesDAO {
 	// Constructor
 	private SesionesDAO() {
 		db = Conexion.getDB();
+		datos = new Datos();
 
 		try {
 			inicializar();
@@ -87,11 +92,8 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	private void crearTablaSesiones() {
 		try {
-			stSesiones.executeQuery(
-					"CREATE TABLE IF NOT EXISTS `sesiones` ("
-					+ "`id_usuario` VARCHAR(45) NOT NULL,"
-					+ "`fecha` DATETIME NOT NULL,"
-					+ "`estado` VARCHAR(20) NOT NULL,"
+			stSesiones.executeUpdate("CREATE TABLE IF NOT EXISTS `sesiones` (" + "`id_usuario` VARCHAR(45) NOT NULL,"
+					+ "`fecha` DATETIME NOT NULL," + "`estado` VARCHAR(20) NOT NULL,"
 					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -106,9 +108,16 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public SesionUsuario obtener(String idSesion) {
-		List<SesionUsuario> lista = obtenerMultiproposito(idSesion);
-		if (lista.size() > 0) {
-			return lista.get(0);
+		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
+		try {
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones "
+					+ "WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s'))=" + idSesion);
+			lista = obtener(rsSesiones);
+			if (lista.size() > 0) {
+				return lista.get(0);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
@@ -120,7 +129,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public List<SesionUsuario> obtenerTodos() {
-		List<SesionUsuario> lista = obtenerMultiproposito(null);
+		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
+		try {
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones");
+			lista = obtener(rsSesiones);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return lista;
 	}
 
@@ -131,7 +146,13 @@ public class SesionesDAO implements OperacionesDAO {
 	 * @return - las sesiones encontradas.
 	 */
 	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr) {
-		List<SesionUsuario> lista = obtenerMultiproposito(idUsr);
+		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
+		try {
+			rsSesiones = stSesiones.executeQuery("SELECT * FROM sesiones WHERE id_usuario=" + idUsr);
+			lista = obtener(rsSesiones);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return lista;
 	}
 
@@ -144,22 +165,14 @@ public class SesionesDAO implements OperacionesDAO {
 	 *           las sesiones que existan.
 	 * @return Lista de Sesiones de usuario encontradas
 	 */
-	private List<SesionUsuario> obtenerMultiproposito(String id) {
+	private List<SesionUsuario> obtener(ResultSet resultadoQuery) {
 		ArrayList<SesionUsuario> listaSesiones = new ArrayList<SesionUsuario>();
 		Usuario usr = null;
-		try {
-			if (id == null) { // Si la id es null, devolverá todo.
-				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones'");
-			} else if (id.contains(":")) { // Si la id contiene el formato de una id de sesion.
-				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' "
-						+ "WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s'))=" + id);
-			} else { // Si la id concuerda con la id de usuario.
-				rsSesiones = stSesiones.executeQuery("SELECT * FROM 'sesiones' WHERE id_usuario=" + id);
-			}
 
-			while (rsSesiones.next()) {
-				usr = UsuariosDAO.getInstance().obtener((rsSesiones.getString("id_usuario")));
-				String estadoString = rsSesiones.getString("estado");
+		try {
+			while (resultadoQuery.next()) {
+				usr = datos.obtenerUsuario((resultadoQuery.getString("id_usuario")));
+				String estadoString = resultadoQuery.getString("estado");
 				EstadoSesion estado = null;
 				switch (estadoString) {
 				case "EN_PREPARACION":
@@ -173,12 +186,12 @@ public class SesionesDAO implements OperacionesDAO {
 					break;
 				}
 
-				listaSesiones.add(new SesionUsuario(usr, new Fecha(rsSesiones.getString("fecha")), estado));
+				listaSesiones.add(new SesionUsuario(usr, new Fecha(resultadoQuery.getString("fecha")), estado));
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
 		return listaSesiones;
 	}
 
@@ -194,18 +207,18 @@ public class SesionesDAO implements OperacionesDAO {
 		SesionUsuario sesionNueva = (SesionUsuario) obj;
 
 		if (obtener(sesionNueva.getId()) == null) {
-			
-			//insert sesion
+
+			// insert sesion
 			String query = "insert into sesiones values (?,?,?);";
-			Timestamp ts = new Timestamp(sesionNueva.getFecha().getMarcaTiempoMilisegundos());  
-			
+			Timestamp ts = new Timestamp(sesionNueva.getFecha().getMarcaTiempoMilisegundos());
+
 			try {
-				//preparar inserción
+				// preparar inserción
 				PreparedStatement prepStm = db.prepareStatement(query);
 				prepStm.setString(1, sesionNueva.getId());
 				prepStm.setTimestamp(2, ts);
 				prepStm.setString(3, sesionNueva.getEstado().toString());
-				
+
 				// insertar
 				prepStm.execute();
 
@@ -277,8 +290,7 @@ public class SesionesDAO implements OperacionesDAO {
 	@Override
 	public void borrarTodo() {
 		try {
-			stSesiones.executeQuery(
-					"TRUNCATE TABLE `sesiones`");
+			stSesiones.executeQuery("TRUNCATE TABLE `sesiones`");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
