@@ -24,6 +24,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
+import accesoDatos.Datos;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.*;
@@ -37,6 +38,9 @@ public class SesionesDAO implements OperacionesDAO {
 
 	// Base de datos
 	private Connection db;
+	
+	// Fachada de datos
+	private Datos datos;
 
 	// Atributos de procesamiento de la base de datos.
 	private Statement stSesiones;
@@ -45,6 +49,7 @@ public class SesionesDAO implements OperacionesDAO {
 	// Constructor
 	private SesionesDAO() {
 		db = Conexion.getDB();
+		datos = new Datos();
 
 		try {
 			inicializar();
@@ -158,7 +163,7 @@ public class SesionesDAO implements OperacionesDAO {
 			}
 
 			while (rsSesiones.next()) {
-				usr = UsuariosDAO.getInstance().obtener((rsSesiones.getString("id_usuario")));
+				usr = datos.obtenerUsuario((rsSesiones.getString("id_usuario")));
 				String estadoString = rsSesiones.getString("estado");
 				EstadoSesion estado = null;
 				switch (estadoString) {
