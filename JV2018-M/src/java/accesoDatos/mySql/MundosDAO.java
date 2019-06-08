@@ -152,7 +152,11 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void cerrar() {
-		
+		try {
+			db.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
