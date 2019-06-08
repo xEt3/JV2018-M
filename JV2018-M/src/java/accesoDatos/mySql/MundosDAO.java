@@ -162,8 +162,8 @@ public class MundosDAO implements OperacionesDAO {
 	@Override
 	public Object obtener(String id) {
 		assert id != null;
-		ejecutarConsuta(id);
-		ejecutarColumnasModelo(); 
+		ejecutarConsulta(id);
+		etiquetarColumnasModelo(); 
 		borrarFilasModelo();
 		rellenarFilasModelo();
 		sincronizarBufferUsuarios();
@@ -174,7 +174,7 @@ public class MundosDAO implements OperacionesDAO {
 		return null;
 	}
 
-	private void ejecutarConsuta(String idMundo) {
+	private void ejecutarConsulta(String idMundo) {
 		try {
 			rsMundo = stMundo.executeQuery("select * from MUNDO where nombre = '"+idMundo+"'");
 		} catch (SQLException e) {
@@ -188,7 +188,7 @@ public class MundosDAO implements OperacionesDAO {
 	 * de la base de datos
 	 */
 
-	private void ejecutarColumnasModelo() {
+	private void etiquetarColumnasModelo() {
 		try {
 			ResultSetMetaData metaDatos = this.rsMundo.getMetaData();
 			
@@ -316,8 +316,8 @@ public class MundosDAO implements OperacionesDAO {
 	
 	@Override
 	public List obtenerTodos() {
-		ejecutarConsuta("%");
-		ejecutarColumnasModelo();
+		ejecutarConsulta("%");
+		etiquetarColumnasModelo();
 		borrarFilasModelo();
 		rellenarFilasModelo();
 		sincronizarBufferUsuarios();
