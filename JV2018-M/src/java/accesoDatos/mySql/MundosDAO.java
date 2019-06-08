@@ -312,8 +312,12 @@ public class MundosDAO implements OperacionesDAO {
 	
 	@Override
 	public List obtenerTodos() {
-		// TODO Auto-generated method stub
-		return null;
+		ejecutarConsuta("%");
+		ejecutarColumnasModelo();
+		borrarFilasModelo();
+		rellenarFilasModelo();
+		sincronizarBufferUsuarios();
+		return this.bufferMundos;
 	}
 
 	@Override
