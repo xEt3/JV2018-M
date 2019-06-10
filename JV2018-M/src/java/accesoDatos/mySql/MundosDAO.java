@@ -152,7 +152,11 @@ public class MundosDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void cerrar() {
-		
+		try {
+			db.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -429,14 +433,24 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public String listarId() {
-		// TODO Auto-generated method stub
-		return null;
+		List<Object> listaMundos = obtenerTodos();
+		StringBuilder listadoMundos = new StringBuilder();
+		
+		for (Object obj : listaMundos) {
+			listadoMundos.append(((Mundo) obj).getId()).append("\n");
+		}
+		
+		return listadoMundos.toString();
 	}
 
 	@Override
 	public void borrarTodo() {
-		// TODO Auto-generated method stub
-		
+		try {
+			stMundo = db.createStatement();
+			stMundo.executeQuery("DELETE FROM MUNDO");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private String formatearDistribucion(List<Posicion> distibucion) {
