@@ -427,8 +427,12 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
+	    List mundos = obtenerTodos();
+        StringBuilder mundosAMostrar = new StringBuilder();
+        for (int i = 0; i < mundos.size(); i++) {
+            mundosAMostrar.append(mundos.get(i)).append("\n");
+        }
+        return mundosAMostrar.toString();
 	}
 
 	@Override
