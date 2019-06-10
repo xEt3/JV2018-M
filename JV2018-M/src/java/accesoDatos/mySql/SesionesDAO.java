@@ -215,7 +215,7 @@ public class SesionesDAO implements OperacionesDAO {
 			try {
 				// preparar inserción
 				PreparedStatement prepStm = db.prepareStatement(query);
-				prepStm.setString(1, sesionNueva.getId());
+				prepStm.setString(1, sesionNueva.getUsr().getId());
 				prepStm.setTimestamp(2, ts);
 				prepStm.setString(3, sesionNueva.getEstado().toString());
 
@@ -238,22 +238,76 @@ public class SesionesDAO implements OperacionesDAO {
 	 * Baja de una sesion existente.
 	 * 
 	 * @param id de la sesion
+	 * @param id de la sesion
 	 * @throws DatosException - si no la encuentra
+	 * @throws DatosException - si no la encuentra
+	 * @throws SQLException - si falla el borrado
+	 * @returns La sesion dada de baja 
 	 */
 	@Override
 	public SesionUsuario baja(String id) throws DatosException {
-		// TODO SesionUsuario.baja
-		return null;
+		assert id != null;
+		SesionUsuario sesionAborrar = (SesionUsuario) obtener(id);
+
+		if (sesionAborrar == null) {
+			throw new DatosException("SesionesDAO.baja: id " + id + "no encontrada");
+		}
+		else 
+		{
+			String query = "delete from sesiones where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s')) = ?";
+
+			try {
+				//preparar borrado
+				PreparedStatement prepStm = db.prepareStatement(query);
+				prepStm.setString(1, sesionAborrar.getId());				
+
+				// borrar tupla
+				prepStm.execute();
+
+				db.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return sesionAborrar;
 	}
 
 	/**
 	 * Actualiza los datos de una sesion.
-	 * 
+	 * Actualiza el estado de una sesión.
+	 * @param objeto sesion con el nuevo estado.
 	 * @param objeto sesion con los nuevos datos.
+	 * @throws DatosException si no encuentra la sesion
+	 * @throws SQLException - si falla la actualización
 	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO SesionUsuario.actualizar
+		assert obj != null;
+		SesionUsuario sesNuevoEstado = (SesionUsuario) obj;
+
+		if (obtener(sesNuevoEstado.getId()) == null) {
+			throw new DatosException("SesionesDAO.baja: id " + sesNuevoEstado.getId() + "no encontrada");
+		}
+		else 
+		{
+			String query = "update sesiones set estado = ?"
+					+ "where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s')) = ?";
+			try {
+				//preparar actualización
+				PreparedStatement prepStm = db.prepareStatement(query);
+				prepStm.setString(1, sesNuevoEstado.getEstado().name());
+				prepStm.setString(2, sesNuevoEstado.getId());
+
+				// actualizar tupla
+				prepStm.execute();
+
+				db.close();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}	
 	}
 
 	/**
