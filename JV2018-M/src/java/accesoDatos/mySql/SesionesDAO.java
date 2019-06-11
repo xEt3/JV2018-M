@@ -92,9 +92,11 @@ public class SesionesDAO implements OperacionesDAO {
 	 */
 	private void crearTablaSesiones() {
 		try {
-			stSesiones.executeUpdate("CREATE TABLE IF NOT EXISTS `sesiones` (" + "`id_usuario` VARCHAR(45) NOT NULL,"
-					+ "`fecha` DATETIME NOT NULL," + "`estado` VARCHAR(20) NOT NULL,"
-					+ "PRIMARY KEY (`id_usuario`, `fecha`))");
+			stSesiones.executeUpdate("CREATE TABLE IF NOT EXISTS `sesiones` ("
+								+ "`id_usuario` VARCHAR(45) NOT NULL,"
+								+ "`fecha` DATETIME NOT NULL,"
+								+ "`estado` VARCHAR(20) NOT NULL,"
+								+ "PRIMARY KEY (`id_usuario`, `fecha`))");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -209,7 +211,7 @@ public class SesionesDAO implements OperacionesDAO {
 		if (obtener(sesionNueva.getId()) == null) {
 
 			// insert sesion
-			String query = "insert into sesiones values (?,?,?);";
+			String query = "INSERT INTO sesiones VALUES (?,?,?);";
 			Timestamp ts = new Timestamp(sesionNueva.getFecha().getMarcaTiempoMilisegundos());
 
 			try {
@@ -238,11 +240,8 @@ public class SesionesDAO implements OperacionesDAO {
 	 * Baja de una sesion existente.
 	 * 
 	 * @param id de la sesion
-	 * @param id de la sesion
 	 * @throws DatosException - si no la encuentra
-	 * @throws DatosException - si no la encuentra
-	 * @throws SQLException - si falla el borrado
-	 * @returns La sesion dada de baja 
+	 * @returns La sesion dada de baja
 	 */
 	@Override
 	public SesionUsuario baja(String id) throws DatosException {
@@ -251,15 +250,13 @@ public class SesionesDAO implements OperacionesDAO {
 
 		if (sesionAborrar == null) {
 			throw new DatosException("SesionesDAO.baja: id " + id + "no encontrada");
-		}
-		else 
-		{
-			String query = "delete from sesiones where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s')) = ?";
+		} else {
+			String query = "DELETE FROM sesiones where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s')) = ?";
 
 			try {
-				//preparar borrado
+				// preparar borrado
 				PreparedStatement prepStm = db.prepareStatement(query);
-				prepStm.setString(1, sesionAborrar.getId());				
+				prepStm.setString(1, sesionAborrar.getId());
 
 				// borrar tupla
 				prepStm.execute();
@@ -275,11 +272,9 @@ public class SesionesDAO implements OperacionesDAO {
 
 	/**
 	 * Actualiza los datos de una sesion.
-	 * Actualiza el estado de una sesión.
-	 * @param objeto sesion con el nuevo estado.
+	 * 
 	 * @param objeto sesion con los nuevos datos.
 	 * @throws DatosException si no encuentra la sesion
-	 * @throws SQLException - si falla la actualización
 	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
@@ -288,13 +283,10 @@ public class SesionesDAO implements OperacionesDAO {
 
 		if (obtener(sesNuevoEstado.getId()) == null) {
 			throw new DatosException("SesionesDAO.baja: id " + sesNuevoEstado.getId() + "no encontrada");
-		}
-		else 
-		{
-			String query = "update sesiones set estado = ?"
-					+ "where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%k%i%s')) = ?";
+		} else {
+			String query = "UPDATE sesiones SET estado = ? WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s')) = ?";
 			try {
-				//preparar actualización
+				// preparar actualización
 				PreparedStatement prepStm = db.prepareStatement(query);
 				prepStm.setString(1, sesNuevoEstado.getEstado().name());
 				prepStm.setString(2, sesNuevoEstado.getId());
@@ -307,11 +299,13 @@ public class SesionesDAO implements OperacionesDAO {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		}	
+		}
 	}
 
 	/**
-	 * @return un String con todos los usuarios.
+	 * Devuelve los datos de todas las Sesiones de usuario como String
+	 * 
+	 * @return un String con los datos de todas las sesiones.
 	 */
 	@Override
 	public String listarDatos() {
@@ -325,7 +319,9 @@ public class SesionesDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * @return un String con todas las IDs de los usuarios.
+	 * Devuelve las IDs de todas las Sesiones de usuario como String
+	 * 
+	 * @return un String con todas las IDs de las sesiones.
 	 */
 	@Override
 	public String listarId() {
