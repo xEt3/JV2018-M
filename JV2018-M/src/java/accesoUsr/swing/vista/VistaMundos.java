@@ -22,7 +22,20 @@ import javax.swing.border.BevelBorder;
 public class VistaMundos {
 
 	private JFrame ventanaMundo;
+	private JTextField textIdentificador;
+	private JTextField textNombre;
+	private JTextField textEspacioX;
+	private JTextField testEspacioY;
+	private JTextField textDistribucion;
+	private JTextField textValoresSobrevivir;
+	private JTextField textValoresRenacer;
+	private JTextField textTipoMundo;
+	private JPanel mostrarMundos;
+	private JPanel panelBotones;
 	private JPanel pedirDatos;
+	private JButton btnAlta;
+	private JButton btnModificar;
+	private JButton btnEliminar;
 	private JLabel labelIdentificador;
 	private JLabel labelValoresRenacer;
 	private JLabel labelValoresSobrevivir;
@@ -60,6 +73,8 @@ public class VistaMundos {
 	 */
 	private void crearPanelesVista() {
 		inicializarPedirDatos();
+		inicializarMostrarMundos();
+		inicializarPanelBotones();
 	}
 
 	/**
@@ -73,6 +88,7 @@ public class VistaMundos {
 		pedirDatos.setLayout(null);
 		ventanaMundo.getContentPane().add(pedirDatos, BorderLayout.EAST);
 		crearEtiquetasPedirlDatos();
+		crearTextFieldPedirDatos();
 	}
 
 	/**
@@ -111,6 +127,99 @@ public class VistaMundos {
 		labelTipoMundo = new JLabel("Tipo Mundo: ");
 		labelTipoMundo.setBounds(16, 249, 98, 16);
 		pedirDatos.add(labelTipoMundo);
+	}
+	
+
+	/**
+	 * Crea los campos de texto, para añadir los datos y luego
+	 * tratarlos para dar de alta, modificar o eliminar
+	 */
+	private void crearTextFieldPedirDatos() {
+		textIdentificador = new JTextField();
+		textIdentificador.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textIdentificador.setBounds(130, 49, 122, 21);
+		pedirDatos.add(textIdentificador);
+
+		textNombre = new JTextField();
+		textNombre.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textNombre.setBounds(130, 79, 122, 21);
+		pedirDatos.add(textNombre);
+		textNombre.setColumns(10);
+
+		textEspacioX = new JTextField();
+		textEspacioX.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textEspacioX.setBounds(130, 107, 122, 21);
+		pedirDatos.add(textEspacioX);
+		textEspacioX.setColumns(10);
+
+		testEspacioY = new JTextField();
+		testEspacioY.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		testEspacioY.setBounds(130, 135, 122, 21);
+		pedirDatos.add(testEspacioY);
+		testEspacioY.setColumns(10);
+
+		textDistribucion = new JTextField();
+		textDistribucion.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textDistribucion.setBounds(130, 160, 122, 22);
+		pedirDatos.add(textDistribucion);
+		textDistribucion.setColumns(10);
+
+		textValoresSobrevivir = new JTextField();
+		textValoresSobrevivir.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textValoresSobrevivir.setBounds(130, 191, 122, 21);
+		pedirDatos.add(textValoresSobrevivir);
+		textValoresSobrevivir.setColumns(10);
+
+		textValoresRenacer = new JTextField();
+		textValoresRenacer.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textValoresRenacer.setBounds(130, 219, 122, 22);
+		pedirDatos.add(textValoresRenacer);
+		textValoresRenacer.setColumns(10);
+
+		textTipoMundo = new JTextField();
+		textTipoMundo.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		textTipoMundo.setBounds(130, 247, 122, 21);
+		pedirDatos.add(textTipoMundo);
+		textTipoMundo.setColumns(10);
+	}
+
+	
+	/**
+	 * Inicializa el panel que muestra los datos de mundo
+	 */
+	private void inicializarMostrarMundos() {
+		mostrarMundos = new JPanel();
+		mostrarMundos.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		mostrarMundos.setBackground(new Color(176, 224, 230));
+		mostrarMundos.setPreferredSize(new Dimension(265, 0));
+		mostrarMundos.setLayout(null);
+		ventanaMundo.getContentPane().add(mostrarMundos, BorderLayout.WEST);
+	}
+
+	/**
+	 * Inicializar el panel que contiene los botones con las operaciones 
+	 * que se puedan realizar en la vista de mundo.
+	 */
+	private void inicializarPanelBotones() {
+		panelBotones = new JPanel();
+		panelBotones.setBackground(new Color(176, 224, 230));
+		panelBotones.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		ventanaMundo.getContentPane().add(panelBotones, BorderLayout.SOUTH);
+		añadirBotonesPanelBotones();
+	}
+
+	/**
+	 * Añade los botones al panel de botones.
+	 */
+	private void añadirBotonesPanelBotones() {
+		btnAlta = new JButton("Alta");
+		panelBotones.add(btnAlta);
+
+		btnModificar = new JButton("Modificar");
+		panelBotones.add(btnModificar);
+
+		btnEliminar = new JButton("Eliminar");
+		panelBotones.add(btnEliminar);
 	}
 	
 }
