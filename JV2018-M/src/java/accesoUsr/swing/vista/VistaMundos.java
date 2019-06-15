@@ -15,7 +15,11 @@
 package accesoUsr.swing.vista;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.BevelBorder;
 
@@ -33,6 +37,7 @@ public class VistaMundos {
 	private JPanel mostrarMundos;
 	private JPanel panelBotones;
 	private JPanel pedirDatos;
+	private JPanel panelImagen;
 	private JButton btnAlta;
 	private JButton btnModificar;
 	private JButton btnEliminar;
@@ -44,6 +49,10 @@ public class VistaMundos {
 	private JLabel labelEspacioX;
 	private JLabel labelNombre;
 	private JLabel labelTipoMundo;
+	private JScrollPane panelScroll;
+	private JTable jTable;
+	private BufferedImage imagen;
+	private JLabel labelImagen; 
 
 	public VistaMundos() {
 		initVistaMundo();
@@ -75,6 +84,9 @@ public class VistaMundos {
 		inicializarPedirDatos();
 		inicializarMostrarMundos();
 		inicializarPanelBotones();
+		inicializarPanelScroll();
+		inicializarJTable();
+		inicializarPanelImagen();
 	}
 
 	/**
@@ -222,4 +234,62 @@ public class VistaMundos {
 		panelBotones.add(btnEliminar);
 	}
 	
+	/**
+	 * Inicializa un panel que una Scroll vertical para movernos por el area
+	 */
+	private void inicializarPanelScroll() {
+		panelScroll = new JScrollPane();
+		panelScroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		panelScroll.setBounds(2, 2, 260, 260);
+		mostrarMundos.add(panelScroll);
+	}
+
+	/**
+	 * Inicializa el panel de imagen que contiene el logo
+	 * de la vista de Mundo.
+	 */
+	private void inicializarPanelImagen() {
+		panelImagen = new JPanel();
+		panelImagen.setLayout(new BorderLayout());
+		panelImagen.setBackground(new Color(176, 224, 230));
+		obtenerImagen();
+		labelImagen = new JLabel(new ImageIcon(imagen.getScaledInstance(200,200, Image.SCALE_AREA_AVERAGING)));
+		panelImagen.add(labelImagen, BorderLayout.CENTER);
+		ventanaMundo.getContentPane().add(panelImagen, BorderLayout.CENTER);
+	}
+
+	/**
+	 * Obtiene el fichero imagen del directorio ./datos/img/
+	 * y lanza una IOException si no encuentra la imagen.
+	 */
+	private void obtenerImagen() {
+		try {
+			imagen = ImageIO.read(new File("./datos/img/", "World.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+
+	/**
+	 * Inicializamos un JTable para mostrar los datos de la base de datos Mundo,
+	 * que contienen en el interior.
+	 */
+	private void inicializarJTable() {
+		jTable = new JTable();
+		jTable.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
+		jTable.setAutoCreateColumnsFromModel(true);
+		jTable.setBackground(new Color(199, 220, 233));
+		jTable.setForeground(SystemColor.textHighlight);
+		jTable.setGridColor(Color.white);
+		jTable.setRowHeight(20);
+		jTable.setShowVerticalLines(false);
+		jTable.setIntercellSpacing(new Dimension(1, 1));
+		jTable.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+		jTable.setLocation(new Point(0, 0));
+		jTable.setSize(new Dimension(240, 256));
+		jTable.setPreferredSize(new Dimension(200, 300));
+		panelScroll.add(jTable);
+	}
+
 }
