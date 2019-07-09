@@ -34,6 +34,9 @@ public class Fecha implements Serializable {
 		this.tiempo = (Calendar) fecha.tiempo.clone();
 	}
 
+	public Fecha(GregorianCalendar gFecha) {
+		tiempo=gFecha;
+	}
 	public Fecha(String textoFecha) {
 		String[] campos = textoFecha.split("[.-/]");
 		this.tiempo = new GregorianCalendar(Integer.parseInt(campos[0]), Integer.parseInt(campos[1])-1, Integer.parseInt(campos[2])); 
@@ -75,7 +78,9 @@ public class Fecha implements Serializable {
 	public long getMarcaTiempoMilisegundos() {	
 		return this.tiempo.getTimeInMillis();
 	}
-	
+	public GregorianCalendar getGregorian() {
+		return (GregorianCalendar) tiempo;
+	}
 	public void setAño(int año) {
 		this.tiempo.set(Calendar.YEAR, año);
 	}

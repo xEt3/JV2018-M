@@ -160,7 +160,7 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Object obtener(String id) {
+	public Mundo obtener(String id) {
 		assert id != null;
 		ejecutarConsulta(id);
 		etiquetarColumnasModelo(); 
