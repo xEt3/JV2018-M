@@ -101,10 +101,14 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	private void crearTablaSimulaciones() {
 		try {
-			stSimulaciones.executeUpdate(
-					"CREATE TABLE IF NOT EXISTS `SIMULACIONES` (" + "`id_simulacion VARCHAR(45) NOT NULL PRIMARY KEY`,"
-							+ "`id_usuario` VARCHAR(45) NOT NULL," + "`fecha` DATETIME NOT NULL,"
-							+"`id_mundo VARCHAR(255) NOT NULL`," + "`ciclos int(8) NOT NULL`," + "`estado` VARCHAR(20) NOT NULL,)" );
+			stSimulaciones.executeUpdate("CREATE TABLE IF NOT EXISTS SIMULACIONES(" + 
+			" id_simulacion VARCHAR(100) NOT NULL PRIMARY KEY,"+
+			" id_usuario VARCHAR(45) NOT NULL," + 
+			"fecha DATETIME NOT NULL," +
+			"id_mundo VARCHAR(255) NOT NULL," + 
+			"ciclos INT NOT NULL," + 
+			"estado VARCHAR(20) NOT NULL" +
+			")");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -133,7 +137,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 
 	private void ejecutarConsulta(String id) {
 		try {
-			rsSimulaciones = stSimulaciones.executeQuery("select * from SIMULACIONES where nombre = '" + id + "'");
+			rsSimulaciones = stSimulaciones.executeQuery("select * from SIMULACIONES where id_simulacion = '" + id + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -189,7 +193,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 		for (int i = 0; i < tmSimulaciones.getRowCount(); i++) {
 			try {
 				String id_usr = (String) tmSimulaciones.getValueAt(i, 1);
-				Fecha fecha  = new Fecha((GregorianCalendar) tmSimulaciones.getValueAt(i, 2));
+				Fecha fecha  = obtenerFechaFromDateTime((String)tmSimulaciones.getValueAt(i, 2));
 				String id_mundo = (String) tmSimulaciones.getValueAt(i, 3);
 				int ciclos= (Integer) tmSimulaciones.getValueAt(i, 4); 
 				EstadoSimulacion estado = obtenerEstadoSimulacion((String)tmSimulaciones.getValueAt(i, 5));
@@ -203,6 +207,19 @@ public class SimulacionesDAO implements OperacionesDAO {
 		
 	}
 
+	/**
+	 * Metodo que combierte el resultado que se obtiene de una consulta de un datetime a un objeto Fecha
+	 * @param dateTime
+	 * @return
+	 */
+	private Fecha obtenerFechaFromDateTime(String dateTime) {
+		String[] fechaYHora= dateTime.split(" ");
+		String[] fecha = fechaYHora[0].split("-");
+		String[] hora = fechaYHora[1].split(":");
+	
+		return new Fecha(Integer.parseInt(fecha[0]),Integer.parseInt(fecha[1]),Integer.parseInt(fecha[2]),
+				Integer.parseInt(hora[0]),Integer.parseInt(hora[1]),Integer.parseInt(hora[2]));
+	}
 
 	private EstadoSimulacion obtenerEstadoSimulacion(String valorSinFormatear) {
 		if(valorSinFormatear.equals("PREPARADA")) {
@@ -267,9 +284,11 @@ public class SimulacionesDAO implements OperacionesDAO {
 		Simulacion simulacion = (Simulacion)obj;
 		
 		String sqlQuery = obtenerConsultaAlta(simulacion);
-		
+		System.out.println("oo");
 		if (obtener(simulacion.getId()) == null) {
+			System.out.println("NO");
 			try {
+				
 				Statement statement = db.createStatement();
 				statement.executeUpdate(sqlQuery);
 			} 
@@ -291,12 +310,12 @@ public class SimulacionesDAO implements OperacionesDAO {
 	private String obtenerConsultaAlta(Simulacion simulacion) {
 		StringBuilder sqlQuery = new StringBuilder();
 		sqlQuery.append("INSERT INTO MUNDO (id_simulacion, id_usuario, fecha, id_mundo,ciclos, estado) VALUES "
-				+ "('" + simulacion.getId()
-				+ "'," + simulacion.getUsr().getId()
-				+ "," + simulacion.getFecha().getGregorian()
-				+ ",'" + simulacion.getMundo().getId()
-				+"','" + simulacion.getCiclos()
-				+ "','"+ formatearEstadoSimulacion(simulacion.getEstado()) +"')");
+				+ "('" + simulacion.getId()+ "'," 
+				+"'"+ simulacion.getUsr().getId()+ "'," 
+				+"'"+ simulacion.getFecha()+ "'," 
+				+"'"+ simulacion.getMundo().getId()+"'," 
+				+ simulacion.getCiclos()+ ","
+				+ "'"+ formatearEstadoSimulacion(simulacion.getEstado()) +"');");
 		
 		return sqlQuery.toString();
 	}
