@@ -46,7 +46,7 @@ public class MundosDAO implements OperacionesDAO {
 	// Elemento de almacenamiento, base datos mySql.
 	private Connection db;
 	private Statement stMundo;
-	private ArrayList<Object> bufferMundos;
+	private ArrayList<Mundo> bufferMundos;
 	private DefaultTableModel tmMundos;
 	private ResultSet rsMundo;
 
@@ -166,7 +166,7 @@ public class MundosDAO implements OperacionesDAO {
 		etiquetarColumnasModelo(); 
 		borrarFilasModelo();
 		rellenarFilasModelo();
-		sincronizarBufferUsuarios();
+		sincronizarBufferMundos();
 		
 		if(bufferMundos.size() > 0) {
 			return (Mundo) bufferMundos.get(0);
@@ -232,7 +232,7 @@ public class MundosDAO implements OperacionesDAO {
 		
 	}
 
-	private void sincronizarBufferUsuarios() {
+	private void sincronizarBufferMundos() {
 		bufferMundos.clear();
 		for (int i = 0; i < tmMundos.getRowCount(); i++) {
 			try {
@@ -315,12 +315,16 @@ public class MundosDAO implements OperacionesDAO {
 	}
 	
 	@Override
-	public List obtenerTodos() {
-		ejecutarConsulta("%");
+	public List<Mundo> obtenerTodos() {
+		try {
+			rsMundo = stMundo.executeQuery("select * from MUNDO");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		etiquetarColumnasModelo();
 		borrarFilasModelo();
 		rellenarFilasModelo();
-		sincronizarBufferUsuarios();
+		sincronizarBufferMundos();
 		return this.bufferMundos;
 	}
 
@@ -431,31 +435,29 @@ public class MundosDAO implements OperacionesDAO {
 
 	@Override
 	public String listarDatos() {
-	    List mundos = obtenerTodos();
+	    List<Mundo> mundos = obtenerTodos();
         StringBuilder mundosAMostrar = new StringBuilder();
         for (int i = 0; i < mundos.size(); i++) {
-            mundosAMostrar.append(mundos.get(i)).append("\n");
+            mundosAMostrar.append(mundos.get(i).getId()).append("\n");
         }
         return mundosAMostrar.toString();
 	}
 
 	@Override
 	public String listarId() {
-		List<Object> listaMundos = obtenerTodos();
-		StringBuilder listadoMundos = new StringBuilder();
-		
-		for (Object obj : listaMundos) {
-			listadoMundos.append(((Mundo) obj).getId()).append("\n");
-		}
-		
-		return listadoMundos.toString();
+	    List<Mundo> mundos = obtenerTodos();
+        StringBuilder mundosAMostrar = new StringBuilder();
+        for (int i = 0; i < mundos.size(); i++) {
+            mundosAMostrar.append(mundos.get(i).getId()).append("\n");
+        }
+        return mundosAMostrar.toString();
 	}
 
 	@Override
 	public void borrarTodo() {
 		try {
 			stMundo = db.createStatement();
-			stMundo.executeQuery("DELETE FROM MUNDO");
+			stMundo.executeUpdate("DELETE FROM MUNDO");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
