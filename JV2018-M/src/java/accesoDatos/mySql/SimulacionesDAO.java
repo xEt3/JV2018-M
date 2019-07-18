@@ -19,6 +19,8 @@ import java.util.Map;
 
 import javax.swing.table.DefaultTableModel;
 
+import com.mysql.cj.xdevapi.SchemaImpl;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -51,7 +53,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 	private Statement stSimulaciones;
 	private ResultSet rsSimulaciones;
 	private DefaultTableModel tmSimulaciones;
-	private ArrayList<Object> bufferSimulaciones;
+	private ArrayList<Simulacion> bufferSimulaciones;
 
 	// Constructor
 	private SimulacionesDAO() {
@@ -221,15 +223,17 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 * @return lista de Sesiones de Usuario
 	 */
 	@Override
-	public List<SesionUsuario> obtenerTodos() {
-		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
+	public ArrayList<Simulacion> obtenerTodos() {
 		try {
-			rsSimulaciones = stSimulaciones.executeQuery("SELECT * FROM sesiones");
-			lista = obtener(rsSimulaciones);
+			rsSimulaciones = stSimulaciones.executeQuery("select * from SIMULACIONES");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return lista;
+		etiquetarColumnasModelo();
+		borrarFilasModelo();
+		rellenarFilasModelo();
+		sincronizarBufferSimulaciones();;
+		return this.bufferSimulaciones;
 	}
 
 	/**
@@ -238,54 +242,17 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 * @param idUsr - el idUsr a buscar.
 	 * @return - las sesiones encontradas.
 	 */
-	public List<SesionUsuario> obtenerTodasMismoUsr(String idUsr) {
-		List<SesionUsuario> lista = new ArrayList<SesionUsuario>();
+	public ArrayList<Simulacion> obtenerTodasMismoUsr(String idUsr) {
 		try {
-			rsSimulaciones = stSimulaciones.executeQuery("SELECT * FROM sesiones WHERE id_usuario=" + idUsr);
-			lista = obtener(rsSimulaciones);
+			rsSimulaciones = stSimulaciones.executeQuery("select * from SIMULACIONES where id_usuario = '" + idUsr + "'");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return lista;
-	}
-
-	/**
-	 * Método obtener que se encarga de buscar en la base de datos según el tipo de
-	 * identificador que le es introducido. Creado para evitar repetición de código.
-	 * 
-	 * @param id - identificador a buscar, si contiene ":" lo detectará como id de
-	 *           sesión, si no, como id de usuario, y si es nulo, devolverá todas
-	 *           las sesiones que existan.
-	 * @return Lista de Sesiones de usuario encontradas
-	 */
-	private List<SesionUsuario> obtener(ResultSet resultadoQuery) {
-		ArrayList<SesionUsuario> listaSesiones = new ArrayList<SesionUsuario>();
-		Usuario usr = null;
-
-		try {
-			while (resultadoQuery.next()) {
-				usr = datos.obtenerUsuario((resultadoQuery.getString("id_usuario")));
-				String estadoString = resultadoQuery.getString("estado");
-				EstadoSesion estado = null;
-				switch (estadoString) {
-				case "EN_PREPARACION":
-					estado = SesionUsuario.EstadoSesion.EN_PREPARACION;
-					break;
-				case "ACTIVA":
-					estado = SesionUsuario.EstadoSesion.ACTIVA;
-					break;
-				case "CERRADA":
-					estado = SesionUsuario.EstadoSesion.CERRADA;
-					break;
-				}
-
-				listaSesiones.add(new SesionUsuario(usr, new Fecha(resultadoQuery.getString("fecha")), estado));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return listaSesiones;
+		etiquetarColumnasModelo();
+		borrarFilasModelo();
+		rellenarFilasModelo();
+		sincronizarBufferSimulaciones();
+		return this.bufferSimulaciones;
 	}
 
 	/**
@@ -356,28 +323,23 @@ public class SimulacionesDAO implements OperacionesDAO {
 	@Override
 	public Simulacion baja(String id) throws DatosException {
 		assert id != null;
-		Simulacion simulacionAborrar = (Simulacion) obtener(id);
-
-		if (simulacionAborrar == null) {
-			throw new DatosException("SesionesDAO.baja: id " + id + "no encontrada");
-		} else {
-			String query = "DELETE FROM sesiones where CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s')) = ?";
-
+		assert !id.matches("");
+		assert !id.matches("[ ]+");
+		
+		Simulacion simulacion = (Simulacion) obtener(id);
+		
+		if (simulacion != null) {
 			try {
-				// preparar borrado
-				PreparedStatement prepStm = db.prepareStatement(query);
-				prepStm.setString(1, simulacionAborrar.getId());
-
-				// borrar tupla
-				prepStm.execute();
-
-				db.close();
-
+				bufferSimulaciones.remove(simulacion);
+				String sql = "DELETE FROM SIMULACIONES WHERE id_simulacion ='" + id + "'";
+				stSimulaciones.executeUpdate(sql);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
+			return simulacion;
 		}
-		return simulacionAborrar;
+		throw new DatosException("Baja: " + id + " no existe...");
+
 	}
 
 	/**
@@ -389,29 +351,44 @@ public class SimulacionesDAO implements OperacionesDAO {
 	@Override
 	public void actualizar(Object obj) throws DatosException {
 		assert obj != null;
-		SesionUsuario sesNuevoEstado = (SesionUsuario) obj;
-
-		if (obtener(sesNuevoEstado.getId()) == null) {
-			throw new DatosException("SesionesDAO.baja: id " + sesNuevoEstado.getId() + "no encontrada");
-		} else {
-			String query = "UPDATE sesiones SET estado = ? WHERE CONCAT(id_usuario,':',DATE_FORMAT(fecha,'%Y%m%d%H%i%s')) = ?";
+		Simulacion simulacionActualizada = (Simulacion) obj;
+		Simulacion  simulacionPrevia = (Simulacion) obtener(simulacionActualizada.getId());
+		String sqlQuery = obtenerConsultaActualizar(simulacionActualizada);
+		if (simulacionPrevia != null) {
 			try {
-				// preparar actualización
-				PreparedStatement prepStm = db.prepareStatement(query);
-				prepStm.setString(1, sesNuevoEstado.getEstado().name());
-				prepStm.setString(2, sesNuevoEstado.getId());
-
-				// actualizar tupla
-				prepStm.execute();
-
-				db.close();
-
-			} catch (SQLException e) {
+				this.bufferSimulaciones.remove(simulacionPrevia);
+				this.bufferSimulaciones.add(simulacionActualizada);
+				this.stSimulaciones.executeUpdate(sqlQuery);
+			}
+			catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
+		throw new DatosException("Actualizar: "+ simulacionActualizada.getId() + " no existe.");
+	}
+	/**
+	 * Consulta que se lanza para actualizar el mundo de la base de datos.
+	 * @param simulacionActualizada
+	 * @return - Devuelve la QuerySQL para actualizar el mundo.
+	 */
+	private String obtenerConsultaActualizar(Simulacion simulacionActualizada) {
+		String id_usr = simulacionActualizada.getId();
+		Fecha fecha= simulacionActualizada.getFecha();
+		String idMundo = simulacionActualizada.getMundo().getId();
+		int ciclos = simulacionActualizada.getCiclos();
+		EstadoSimulacion estado = simulacionActualizada.getEstado();
+		
+		StringBuilder query = new StringBuilder();
+		
+
+		
+		query.append("UPDATE SIMULACION SET id_usuario = '" + id_usr + "', fecha  = '" + fecha.getGregorian() + "', id:mundo  = '" + idMundo
+				+ "', ciclos = '" + ciclos + "', estado = '" + formatearEstadoSimulacion(estado)
+				+ "' WHERE id_simulacion LIKE'"+ simulacionActualizada.getId()+"'");
+		return query.toString();
 	}
 
+	
 	/**
 	 * Devuelve los datos de todas las Sesiones de usuario como String
 	 * 
@@ -420,9 +397,9 @@ public class SimulacionesDAO implements OperacionesDAO {
 	@Override
 	public String listarDatos() {
 		StringBuffer result = new StringBuffer();
-		List<SesionUsuario> listaSsn = obtenerTodos();
-		for (SesionUsuario sesionUsuario : listaSsn) {
-			result.append(sesionUsuario.toString() + ("\n"));
+		List<Simulacion> listaSsn = obtenerTodos();
+		for (Simulacion simulacionUsuario : listaSsn) {
+			result.append(simulacionUsuario.toString() + ("\n"));
 		}
 
 		return result.toString();
@@ -436,9 +413,9 @@ public class SimulacionesDAO implements OperacionesDAO {
 	@Override
 	public String listarId() {
 		StringBuffer result = new StringBuffer();
-		List<SesionUsuario> listaSsn = obtenerTodos();
-		for (SesionUsuario sesionUsuario : listaSsn) {
-			result.append(sesionUsuario.getId() + ("\n"));
+		List<Simulacion> listaSsn = obtenerTodos();
+		for (Simulacion simulacion: listaSsn) {
+			result.append(simulacion.getId() + ("\n"));
 		}
 
 		return result.toString();
@@ -449,10 +426,10 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void borrarTodo() {
-		List<SesionUsuario> listaSesiones = obtenerTodos();
-		for (SesionUsuario sesion : listaSesiones) {
+		List<Simulacion> listaSimulaciones = obtenerTodos();
+		for (Simulacion simulacion : listaSimulaciones) {
 			try {
-				baja(sesion.getId());
+				baja(simulacion.getId());
 			} catch (DatosException e) {
 				e.printStackTrace();
 			}
