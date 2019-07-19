@@ -23,6 +23,7 @@ public class Simulacion implements Identificable, Serializable {
 	private int ciclos;
 	public enum EstadoSimulacion  {PREPARADA, INICIADA, COMPLETADA}
 	private EstadoSimulacion estado;
+	private String id;
 
 	/**
 	 * Constructor convencional.
@@ -40,6 +41,15 @@ public class Simulacion implements Identificable, Serializable {
 		setMundo(mundo);
 		setCiclos(ciclos);
 		setEstado(estado);
+		setId();
+	}
+	public Simulacion(String id,Usuario usr, Fecha fecha, Mundo mundo, int ciclos, EstadoSimulacion estado) {
+		setUsr(usr);
+		setFecha(fecha);
+		setMundo(mundo);
+		setCiclos(ciclos);
+		setEstado(estado);
+		this.id= id;
 	}
 
 	/**
@@ -67,10 +77,11 @@ public class Simulacion implements Identificable, Serializable {
 		this.mundo = new Mundo(simul.mundo);
 		this.ciclos = simul.ciclos;
 		this.estado = simul.estado;
+		this.id = new String(simul.getId());
 	}
 
 	public String getId() {	
-		return this.usr.getId() + "-" + fecha.toStringMarcaTiempo();
+		return id;
 	}
 	
 	public Usuario getUsr() {
@@ -117,13 +128,17 @@ public class Simulacion implements Identificable, Serializable {
 		this.estado = estado;
 	}
 	
+	private void setId() {
+		id= this.usr.getId() + "-" + fecha.toStringMarcaTiempo();
+	}
+	
 	@Override
 	public String toString() {
 		return String.format(
-				"Simulacion [usr=%s, fecha=%s, mundo=%s, estado=%s]", usr, fecha, mundo, estado);
+				"Simulacion [usr=%s, fecha=%s, mundo=%s, estado=%s]", usr, fecha.toDateSql(), mundo.getId(), estado);
 	}
 
-	/**
+	/**+
 	 * hashCode() complementa al método equals y sirve para comparar objetos de forma 
 	 * rápida en estructuras Hash. 
 	 * Cuando Java compara dos objetos en estructuras de tipo hash (HashMap, HashSet etc)
