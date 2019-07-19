@@ -284,6 +284,10 @@ public class Fecha implements Serializable {
 	public String toDateTimeSql() {
 		return getAño()+"-"+getMes()+"-"+getDia()+"T"+getHora()+":"+getMinuto()+":"+getSegundo();
 	}
+	
+	public String toDateSql() {
+		return getAño()+"-"+getMes()+"-"+getDia();
+	}
 	/**
 	 * Dos objetos son iguales si: 
 	 * Son de la misma clase.
