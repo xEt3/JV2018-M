@@ -16,7 +16,6 @@ package mySql;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -37,20 +36,38 @@ import modelo.DireccionPostal;
 import modelo.ModeloException;
 import modelo.Mundo;
 import modelo.Nif;
-import modelo.Mundo.FormaEspacio;
 import modelo.Simulacion;
 import modelo.Simulacion.EstadoSimulacion;
 import modelo.Usuario.RolUsuario;
 import modelo.Usuario;
+import modelo.Mundo.FormaEspacio;
 import util.Fecha;
 
 public class SimulacionesDAOTest {
 
 	private static SimulacionesDAO simulacionesDAO1;
+	private static Usuario usuario1;
+	private static Usuario usuario2;
+	private static Mundo mundo;
 
 	@BeforeAll
 	public static void inicializarDatosFijos() {
 		simulacionesDAO1 = SimulacionesDAO.getInstance();
+		 try {
+				usuario1 = new Usuario(new Nif("17197760Q"), "Antonio",
+						"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+						new Correo("antonio@gmail.com"), new Fecha(1990, 11, 12), 
+						new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+				usuario2= new Usuario(new Nif("52149567B"), "Fernando",
+						"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+						new Correo("fernando@gmail.com"), new Fecha(1990, 11, 12), 
+						new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+				mundo = new Mundo("Demo123", new byte[20][20], new LinkedList<>(), new HashMap<>(), FormaEspacio.ESFERICO);
+		} catch (ModeloException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		 
 	}
 
 	@AfterAll
@@ -60,103 +77,81 @@ public class SimulacionesDAOTest {
 
 	@BeforeEach
 	public void borrarDatosFijos() {
-		//simulacionesDAO1.borrarTodo();
+		simulacionesDAO1.borrarTodo();
 	}
 
 	@Test
 	public void testMundosDAODefecto() {
-		//assertNotNull(simulacionesDAO1);
+		assertNotNull(simulacionesDAO1);
 	}
 
 	@Test
 	public void testSimulacionesDAOAlta() {
 		try {
-			Simulacion simulacion = new Simulacion(new Usuario(), new Fecha(), new Mundo(), 5,
+			Simulacion simulacion = new Simulacion(usuario1, new Fecha(),mundo , 5,
 					EstadoSimulacion.INICIADA);
 			simulacionesDAO1.alta(simulacion);
 			assertEquals(simulacionesDAO1.obtener(simulacion.getId()).getId(), simulacion.getId());
-		} catch (DatosException | ModeloException e) {
+		} catch (DatosException e) {
 		}
 
 	}
 
 	@Test
 	public void testSimulacionesDAOBaja() {
-//		try {
-//			Usuario usuario1 = new Usuario(new Nif("00000001R"), "Luis", "Roca Mora",
-//					new DireccionPostal("Roncal", "10", "30130", "Murcia"), new Correo("luis@gmail.com"),
-//					new Fecha(2000, 03, 21), new Fecha(2018, 10, 17), new ClaveAcceso("Miau#12"), RolUsuario.NORMAL);
-//			Simulacion simulacion = new Simulacion(usuario1,new Fecha(),new Mundo(),5,EstadoSimulacion.INICIADA);
-//			simulacionesDAO1.alta(simulacion);
-//			simulacionesDAO1.baja(simulacion.getId());
-//			assertNull(simulacionesDAO1.obtener(simulacion.getId()));
-//		} catch (DatosException | ModeloException e) {
-//		}
+		try {
+			Simulacion simulacion = new Simulacion(usuario1,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacion);
+			simulacionesDAO1.baja(simulacion.getId());
+			assertNull(simulacionesDAO1.obtener(simulacion.getId()));
+		} catch (DatosException e) {
+		}
 
 	}
 
 	@Test
 	public void testSimulacinesDAOObtener() {
-//		try {
-//			Usuario usuario1 = new Usuario(new Nif("00000001R"), "Luis", "Roca Mora",
-//					new DireccionPostal("Roncal", "10", "30130", "Murcia"), new Correo("luis@gmail.com"),
-//					new Fecha(2000, 03, 21), new Fecha(2018, 10, 17), new ClaveAcceso("Miau#12"), RolUsuario.NORMAL);
-//			
-//			Simulacion simulacionObtener = new Simulacion(usuario1,new Fecha(),new Mundo(),5,EstadoSimulacion.INICIADA);
-//			
-//			simulacionesDAO1.alta(simulacionObtener);
-//			assertEquals(simulacionesDAO1.obtener(simulacionObtener.getId()).getId(), simulacionObtener.getId());
-//		} catch (DatosException | ModeloException e) {
-//
-//		}
+		try {
+			Simulacion simulacionObtener = new Simulacion(usuario1,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacionObtener);
+			assertEquals(simulacionesDAO1.obtener(simulacionObtener.getId()).getId(), simulacionObtener.getId());
+		} catch (DatosException e) {
+
+		}
 	}
 
 	@Test
 	public void testSimulacionesDAOBorrarTodos() {
-//		StringBuilder result = new StringBuilder("[]");
-//		simulacionesDAO1.borrarTodo();
-//		assertEquals(simulacionesDAO1.obtenerTodos().toString(), result.toString());
+		StringBuilder result = new StringBuilder("[]");
+		simulacionesDAO1.borrarTodo();
+		assertEquals(simulacionesDAO1.obtenerTodos().toString(), result.toString());
 	}
 
 	@Test
 	public void testListarId() {
-//		try {
-//			Usuario usuario1 = new Usuario(new Nif("00000001R"), "Luis", "Roca Mora",
-//					new DireccionPostal("Roncal", "10", "30130", "Murcia"), new Correo("luis@gmail.com"),
-//					new Fecha(2000, 03, 21), new Fecha(2018, 10, 17), new ClaveAcceso("Miau#12"), RolUsuario.NORMAL);
-//			Simulacion simulacion1 = new Simulacion(usuario1,new Fecha(),new Mundo(),5,EstadoSimulacion.INICIADA);
-//			simulacionesDAO1.alta(simulacion1);
-//			
-//			Usuario usuario2 = new Usuario(new Nif("00606383B"), "Manuel", "Martin Mora",
-//					new DireccionPostal("Roncal", "10", "30130", "Murcia"), new Correo("martin@gmail.com"),
-//					new Fecha(2000, 03, 21), new Fecha(2018, 10, 17), new ClaveAcceso("Miau#12"), RolUsuario.NORMAL);
-//			Simulacion simulacion2 = new Simulacion(usuario2,new Fecha(),new Mundo(),5,EstadoSimulacion.INICIADA);
-//			simulacionesDAO1.alta(simulacion2);
-//			
-//			assertEquals(simulacionesDAO1.listarId(), simulacion1.getId()+"\n"+simulacion2.getId()+"\n");
-//		} catch (DatosException | ModeloException e) {
-//			fail("No debe llegar aquí...");
-//		}
+		try {
+			Simulacion simulacion1 = new Simulacion(usuario1,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacion1);
+			Simulacion simulacion2 = new Simulacion(usuario2,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacion2);
+			
+			assertEquals(simulacionesDAO1.listarId(), simulacion1.getId()+"\n"+simulacion2.getId()+"\n");
+		} catch (DatosException e) {
+			fail("No debe llegar aquí...");
+		}
 	}
 
 	@Test
 	public void testListarDatos() {
-//		try {
-//			Mundo mundo1 = new Mundo("Demo123", new byte[20][20], new LinkedList<>(), new HashMap<>(),
-//					FormaEspacio.ESFERICO);
-//			simulacionesDAO1.alta(mundo1);
-//			Mundo mundo2 = new Mundo("Demo321", new byte[20][20], new LinkedList<>(), new HashMap<>(),
-//					FormaEspacio.ESFERICO);
-//			simulacionesDAO1.alta(mundo2);
-//			List<Simulacion> simulaciones = simulacionesDAO1.obtenerTodos();
-//			StringBuilder simulacionesAMostrar = new StringBuilder();
-//			for (int i = 0; i < simulaciones.size(); i++) {
-//				simulacionesAMostrar.append(simulaciones.get(i).getId()).append("\n");
-//			}
-//			assertEquals(simulacionesDAO1.listarDatos(), simulacionesAMostrar.toString());
-//		} catch (DatosException | ModeloException e) {
-//			fail("No debe llegar aquí...");
-//		}
+		try {
+			Simulacion simulacion1 = new Simulacion(usuario1,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacion1);
+			Simulacion simulacion2 = new Simulacion(usuario2,new Fecha(),mundo,5,EstadoSimulacion.INICIADA);
+			simulacionesDAO1.alta(simulacion2);
+			assertEquals(simulacionesDAO1.listarDatos(),simulacion1+"\n"+simulacion2+"\n");
+		} catch (DatosException  e) {
+			fail("No debe llegar aquí...");
+		}
 	}
 
 	@Test

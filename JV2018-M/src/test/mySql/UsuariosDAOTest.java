@@ -10,33 +10,21 @@
 package mySql;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
-
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import accesoDatos.Datos;
 import accesoDatos.DatosException;
-import accesoDatos.mySql.MundosDAO;
 import accesoDatos.mySql.UsuariosDAO;
 import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
 import modelo.ModeloException;
-import modelo.Mundo;
 import modelo.Nif;
 import modelo.Usuario;
-import modelo.Mundo.FormaEspacio;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
 

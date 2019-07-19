@@ -29,7 +29,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 
-import accesoDatos.Datos;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.*;
@@ -46,9 +45,6 @@ public class SimulacionesDAO implements OperacionesDAO {
 	// Base de datos
 	private Connection db;
 
-	// Fachada de datos
-	private Datos datos;
-
 	// Atributos de procesamiento de la base de datos.
 	private Statement stSimulaciones;
 	private ResultSet rsSimulaciones;
@@ -58,8 +54,6 @@ public class SimulacionesDAO implements OperacionesDAO {
 	// Constructor
 	private SimulacionesDAO() {
 		db = Conexion.getDB();
-		datos = new Datos();
-
 		try {
 			inicializar();
 		} catch (SQLException e) {
@@ -94,6 +88,10 @@ public class SimulacionesDAO implements OperacionesDAO {
 			crearTablaSimulaciones();
 		} catch (SQLException e) {
 		}
+		
+		tmSimulaciones= new DefaultTableModel();
+		bufferSimulaciones = new ArrayList<>();
+		
 	}
 
 	/**
@@ -192,14 +190,15 @@ public class SimulacionesDAO implements OperacionesDAO {
 		bufferSimulaciones.clear();
 		for (int i = 0; i < tmSimulaciones.getRowCount(); i++) {
 			try {
+				String id_simulacion = (String) tmSimulaciones.getValueAt(i, 0);
 				String id_usr = (String) tmSimulaciones.getValueAt(i, 1);
-				Fecha fecha  = obtenerFechaFromDateTime((String)tmSimulaciones.getValueAt(i, 2));
+				Fecha fecha  = obtenerFechaFromDateTime(tmSimulaciones.getValueAt(i, 2).toString());
 				String id_mundo = (String) tmSimulaciones.getValueAt(i, 3);
 				int ciclos= (Integer) tmSimulaciones.getValueAt(i, 4); 
 				EstadoSimulacion estado = obtenerEstadoSimulacion((String)tmSimulaciones.getValueAt(i, 5));
 				UsuariosDAO usrDAO = UsuariosDAO.getInstance();
 				MundosDAO mundosDAO= MundosDAO.getInstance();
-				bufferSimulaciones.add(new Simulacion(usrDAO.obtener(id_usr),fecha,mundosDAO.obtener(id_mundo),ciclos,estado));
+				bufferSimulaciones.add(new Simulacion(id_simulacion,usrDAO.obtener(id_usr),fecha,mundosDAO.obtener(id_mundo),ciclos,estado));
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -216,9 +215,8 @@ public class SimulacionesDAO implements OperacionesDAO {
 		String[] fechaYHora= dateTime.split(" ");
 		String[] fecha = fechaYHora[0].split("-");
 		String[] hora = fechaYHora[1].split(":");
-	
 		return new Fecha(Integer.parseInt(fecha[0]),Integer.parseInt(fecha[1]),Integer.parseInt(fecha[2]),
-				Integer.parseInt(hora[0]),Integer.parseInt(hora[1]),Integer.parseInt(hora[2]));
+				Integer.parseInt(hora[0]),Integer.parseInt(hora[1]),(int)Double.parseDouble(hora[2]));
 	}
 
 	private EstadoSimulacion obtenerEstadoSimulacion(String valorSinFormatear) {
@@ -284,9 +282,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 		Simulacion simulacion = (Simulacion)obj;
 		
 		String sqlQuery = obtenerConsultaAlta(simulacion);
-		System.out.println("oo");
 		if (obtener(simulacion.getId()) == null) {
-			System.out.println("NO");
 			try {
 				
 				Statement statement = db.createStatement();
@@ -309,7 +305,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	private String obtenerConsultaAlta(Simulacion simulacion) {
 		StringBuilder sqlQuery = new StringBuilder();
-		sqlQuery.append("INSERT INTO MUNDO (id_simulacion, id_usuario, fecha, id_mundo,ciclos, estado) VALUES "
+		sqlQuery.append("INSERT INTO SIMULACIONES (id_simulacion,id_usuario,fecha,id_mundo,ciclos,estado) VALUES"
 				+ "('" + simulacion.getId()+ "'," 
 				+"'"+ simulacion.getUsr().getId()+ "'," 
 				+"'"+ simulacion.getFecha()+ "'," 
@@ -445,13 +441,11 @@ public class SimulacionesDAO implements OperacionesDAO {
 	 */
 	@Override
 	public void borrarTodo() {
-		List<Simulacion> listaSimulaciones = obtenerTodos();
-		for (Simulacion simulacion : listaSimulaciones) {
-			try {
-				baja(simulacion.getId());
-			} catch (DatosException e) {
-				e.printStackTrace();
-			}
+		try {
+			stSimulaciones.executeUpdate("DELETE FROM SIMULACIONES");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
