@@ -27,6 +27,7 @@ import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
 import modelo.ModeloException;
+import modelo.Mundo;
 import modelo.Nif;
 import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
@@ -40,14 +41,14 @@ public class UsuariosDAO implements OperacionesDAO {
 	private Connection db;
 	private Statement stUsuarios;
 	private ResultSet rsUsuarios;
-	private DefaultTableModel tmUsuarios; 	// Tabla del resultado de la consulta.
-	private ArrayList<Usuario> bufferUsuarios; 	
+	private DefaultTableModel tmUsuarios; // Tabla del resultado de la consulta.
+	private ArrayList<Usuario> bufferUsuarios;
 
 	/**
-	 *  Método de acceso a la instancia única.
-	 *  Si no existe la crea invocando al constructor interno.
-	 *  Utiliza inicialización diferida de la instancia única.
-	 *  @return instancia
+	 * Método de acceso a la instancia única. Si no existe la crea invocando al
+	 * constructor interno. Utiliza inicialización diferida de la instancia única.
+	 * 
+	 * @return instancia
 	 */
 	public static UsuariosDAO getInstance() {
 		if (instance == null) {
@@ -65,8 +66,7 @@ public class UsuariosDAO implements OperacionesDAO {
 			if (obtener("AAA0T") == null || obtener("III1R") == null) {
 				cargarPredeterminados();
 			}
-		} 
-		catch (SQLException | DatosException e) {
+		} catch (SQLException | DatosException e) {
 			e.printStackTrace();
 		}
 	}
@@ -74,70 +74,54 @@ public class UsuariosDAO implements OperacionesDAO {
 	/**
 	 * Inicializa el DAO, detecta si existen las tablas de datos capturando la
 	 * excepción SQLException.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	private void inicializar() {
 		db = Conexion.getDB();
 		try {
 			crearTablaUsuarios();
 			stUsuarios = db.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		// Crea el tableModel y el buffer de objetos para usuarios.
 		tmUsuarios = new DefaultTableModel();
-		bufferUsuarios = new ArrayList<Usuario>(); 
+		bufferUsuarios = new ArrayList<Usuario>();
 	}
 
 	/**
 	 * Crea la tabla de usuarios en la base de datos.
-	 * @throws SQLException 
+	 * 
+	 * @throws SQLException
 	 */
 	private void crearTablaUsuarios() throws SQLException {
 		Statement s = db.createStatement();
-		s.executeUpdate("CREATE TABLE IF NOT EXISTS usuarios (" 
-				+ "id VARCHAR(5) PRIMARY KEY,"
-				+ "nif VARCHAR(9) NOT NULL,"
-				+ "correo VARCHAR(45) NOT NULL,"
-				+ "nombre VARCHAR(45) NOT NULL," 
-				+ "apellidos VARCHAR(45) NOT NULL," 
-				+ "calle VARCHAR(45) NOT NULL," 
-				+ "numero VARCHAR(5) NOT NULL," 
-				+ "cp VARCHAR(5) NOT NULL," 
-				+ "poblacion VARCHAR(45) NOT NULL,"  
-				+ "fechaNacimiento DATE," 
-				+ "fechaAlta DATE," 
-				+ "claveAcceso VARCHAR(16) NOT NULL," 	
-				+ "rol VARCHAR(20) NOT NULL," 
-				+ "UNIQUE (nif),"
-				+ "UNIQUE (correo)"
-				+ ");"
-				);
+		s.executeUpdate("CREATE TABLE IF NOT EXISTS usuarios (" + "id VARCHAR(5) PRIMARY KEY,"
+				+ "nif VARCHAR(9) NOT NULL," + "correo VARCHAR(45) NOT NULL," + "nombre VARCHAR(45) NOT NULL,"
+				+ "apellidos VARCHAR(45) NOT NULL," + "calle VARCHAR(45) NOT NULL," + "numero VARCHAR(5) NOT NULL,"
+				+ "cp VARCHAR(5) NOT NULL," + "poblacion VARCHAR(45) NOT NULL," + "fechaNacimiento DATE,"
+				+ "fechaAlta DATE," + "claveAcceso VARCHAR(16) NOT NULL," + "rol VARCHAR(20) NOT NULL,"
+				+ "UNIQUE (nif)," + "UNIQUE (correo)" + ");");
 	}
 
 	/**
-	 *  Método para generar los datos predeterminados.
-	 * @throws SQLException 
-	 * @throws DatosException 
+	 * Método para generar los datos predeterminados.
+	 * 
+	 * @throws SQLException
+	 * @throws DatosException
 	 */
 	private void cargarPredeterminados() throws SQLException, DatosException {
 		try {
-			alta(new Usuario());	//Invitado.
+			alta(new Usuario()); // Invitado.
 
 			String nombre = Configuracion.get().getProperty("usuario.admin");
-			alta(new Usuario(new Nif(Configuracion.get().getProperty("usuario.nifAdmin")), 
-					nombre, 
-					nombre + " " + nombre, 
-					new DireccionPostal(), 
-					new Correo(nombre.toLowerCase() + Configuracion.get().getProperty("correo.dominioPredeterminado")), 
-					new Fecha(Configuracion.get().getProperty("usuario.fechaNacimientoPredeterminada")), 
-					new Fecha(), 
-					new ClaveAcceso(), 
-					RolUsuario.ADMINISTRADOR)
-					);
-		} 
-		catch (ModeloException | DatosException e) {
+			alta(new Usuario(new Nif(Configuracion.get().getProperty("usuario.nifAdmin")), nombre,
+					nombre + " " + nombre, new DireccionPostal(),
+					new Correo(nombre.toLowerCase() + Configuracion.get().getProperty("correo.dominioPredeterminado")),
+					new Fecha(Configuracion.get().getProperty("usuario.fechaNacimientoPredeterminada")), new Fecha(),
+					new ClaveAcceso(), RolUsuario.ADMINISTRADOR));
+		} catch (ModeloException | DatosException e) {
 			e.printStackTrace();
 		}
 	}
@@ -145,28 +129,29 @@ public class UsuariosDAO implements OperacionesDAO {
 	// MÉTODOS DAO Usuarios
 
 	/**
-	 * Obtiene el usuario buscado dado un objeto. 
-	 * Si no existe devuelve null.
+	 * Obtiene el usuario buscado dado un objeto. Si no existe devuelve null.
+	 * 
 	 * @param Usuario a obtener.
-	 * @return (Usuario) buscado. 
-	 */	
+	 * @return (Usuario) buscado.
+	 */
 	public Usuario obtener(Object obj) {
 		assert obj != null;
 		return obtener(((Usuario) obj).getId());
 	}
 
 	/**
-	 * Obtiene el usuario buscado dado su id, el nif o el correo. 
-	 * Si no existe devuelve null.
+	 * Obtiene el usuario buscado dado su id, el nif o el correo. Si no existe
+	 * devuelve null.
+	 * 
 	 * @param idUsr del usuario a obtener.
-	 * @return (Usuario) buscado. 
-	 */	
+	 * @return (Usuario) buscado.
+	 */
 	@Override
-	public Usuario obtener(String idUsr) {		
+	public Usuario obtener(String idUsr) {
 		assert idUsr != null;
 		assert !idUsr.equals("");
 		assert !idUsr.equals(" ");
-		
+
 		ejecutarConsulta(idUsr);
 
 		// Establece columnas y etiquetas.
@@ -188,8 +173,9 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * Determina el idUsr recibido y ejecuta la consulta.
-	 * Los resultados quedan en el ResultSet
+	 * Determina el idUsr recibido y ejecuta la consulta. Los resultados quedan en
+	 * el ResultSet
+	 * 
 	 * @param idUsr
 	 */
 	private void ejecutarConsulta(String idUsr) {
@@ -199,19 +185,18 @@ public class UsuariosDAO implements OperacionesDAO {
 		}
 		if (idUsr.matches(Formato.PATRON_CORREO1)) {
 			id = "correo";
-		}	
+		}
 
 		try {
 			rsUsuarios = stUsuarios.executeQuery("SELECT * FROM usuarios WHERE " + id + " = '" + idUsr + "'");
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Crea las columnas del TableModel a partir de los metadatos del ResultSet
-	 * de una consulta a base de datos
+	 * Crea las columnas del TableModel a partir de los metadatos del ResultSet de
+	 * una consulta a base de datos
 	 */
 	private void establecerColumnasModelo() {
 		try {
@@ -229,14 +214,14 @@ public class UsuariosDAO implements OperacionesDAO {
 
 			// Incorpora array de etiquetas en el TableModel.
 			((DefaultTableModel) this.tmUsuarios).setColumnIdentifiers(etiquetas);
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Borra todas las filas del TableModel
+	 * 
 	 * @param tm - El TableModel a vaciar
 	 */
 	private void borrarFilasModelo() {
@@ -258,15 +243,14 @@ public class UsuariosDAO implements OperacionesDAO {
 				}
 				((DefaultTableModel) this.tmUsuarios).addRow(datosFila);
 			}
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
-	 * Regenera lista de los objetos procesando el tableModel. 
-	 */	
+	 * Regenera lista de los objetos procesando el tableModel.
+	 */
 	private void sincronizarBufferUsuarios() {
 		bufferUsuarios.clear();
 		for (int i = 0; i < tmUsuarios.getRowCount(); i++) {
@@ -276,17 +260,16 @@ public class UsuariosDAO implements OperacionesDAO {
 				Correo correo = new Correo((String) tmUsuarios.getValueAt(i, 2));
 				String nombre = (String) tmUsuarios.getValueAt(i, 3);
 				String apellidos = (String) tmUsuarios.getValueAt(i, 4);
-				DireccionPostal domicilio = new DireccionPostal((String) tmUsuarios.getValueAt(i, 5), 
-						(String) tmUsuarios.getValueAt(i, 6),
-						(String) tmUsuarios.getValueAt(i, 7),
+				DireccionPostal domicilio = new DireccionPostal((String) tmUsuarios.getValueAt(i, 5),
+						(String) tmUsuarios.getValueAt(i, 6), (String) tmUsuarios.getValueAt(i, 7),
 						(String) tmUsuarios.getValueAt(i, 8));
-				Fecha fechaNacimiento = new Fecha((java.sql.Date) tmUsuarios.getValueAt(i, 9));
-				Fecha fechaAlta = new Fecha((java.sql.Date) tmUsuarios.getValueAt(i, 10));
+				Fecha fechaNacimiento = obtenerFechaFromDate(tmUsuarios.getValueAt(i, 9).toString());
+				Fecha fechaAlta = obtenerFechaFromDate(tmUsuarios.getValueAt(i, 10).toString());
 				ClaveAcceso claveAcceso = new ClaveAcceso();
-				claveAcceso.setTextoEncriptado((String)tmUsuarios.getValueAt(i, 11));
+				claveAcceso.setTextoEncriptado((String) tmUsuarios.getValueAt(i, 11));
 				RolUsuario rol = null;
 				switch ((String) tmUsuarios.getValueAt(i, 12)) {
-				case "INVITADO":  
+				case "INVITADO":
 					rol = RolUsuario.INVITADO;
 					break;
 				case "NORMAL":
@@ -295,15 +278,24 @@ public class UsuariosDAO implements OperacionesDAO {
 				case "ADMINISTRADOR":
 					rol = RolUsuario.ADMINISTRADOR;
 					break;
-				}	
+				}
 				// Genera y guarda objeto
-				bufferUsuarios.add(new Usuario(nif, nombre, apellidos, domicilio, correo, 
-						fechaNacimiento, fechaAlta, claveAcceso, rol));
-			} 
-			catch (ModeloException e) {
+				bufferUsuarios.add(new Usuario(nif, nombre, apellidos, domicilio, correo, fechaNacimiento, fechaAlta,
+						claveAcceso, rol));
+			} catch (ModeloException e) {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	/**
+	 * Metodo que combierte el resultado que se obtiene de una consulta de un datetime a un objeto Fecha
+	 * @param dateTime
+	 * @return
+	 */
+	private Fecha obtenerFechaFromDate(String date) {
+		String[] fecha = date.split("-");
+		return new Fecha(Integer.parseInt(fecha[0]),Integer.parseInt(fecha[1]),Integer.parseInt(fecha[2]));
 	}
 
 	/**
@@ -339,8 +331,10 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 *  Si hay coincidencia de identificador hace 23 intentos de variar la última letra
-	 *  procedente del NIF. Llama al generarVarianteIdUsr() de la clase Usuario.
+	 * Si hay coincidencia de identificador hace 23 intentos de variar la última
+	 * letra procedente del NIF. Llama al generarVarianteIdUsr() de la clase
+	 * Usuario.
+	 * 
 	 * @param usr
 	 * @return usr con el id variado.
 	 * @throws DatosException
@@ -350,15 +344,15 @@ public class UsuariosDAO implements OperacionesDAO {
 		// Coincidencia de id. Hay que generar variante
 		int intentos = "ABCDEFGHJKLMNPQRSTUVWXYZ".length();
 		do {
-			usr = new Usuario(usr);	 	// El constructor copia generar variante.
+			usr = new Usuario(usr); // El constructor copia generar variante.
 			if (obtener(usr.getId()) == null) {
-				return usr;  		
+				return usr;
 			}
 			intentos--;
 		} while (intentos >= 0);
 		throw new DatosException("UsuariosDAO.alta: imposible generar variante del " + usr.getId());
 	}
-
+	
 	/**
 	 * almacena usuario en la base de datos.
 	 * @param usr, el objeto a procesar.
@@ -378,8 +372,8 @@ public class UsuariosDAO implements OperacionesDAO {
 		this.rsUsuarios.updateString("numero", usr.getDomicilio().getNumero());
 		this.rsUsuarios.updateString("cp", usr.getDomicilio().getCp());
 		this.rsUsuarios.updateString("poblacion", usr.getDomicilio().getPoblacion());
-		this.rsUsuarios.updateDate("fechaNacimiento", new java.sql.Date(usr.getFechaNacimiento().toDate().getTime()));
-		this.rsUsuarios.updateDate("fechaAlta",  new java.sql.Date(usr.getFechaAlta().toDate().getTime()));
+		this.rsUsuarios.updateString("fechaNacimiento",usr.getFechaNacimiento().toDateSql());
+		this.rsUsuarios.updateString("fechaAlta", usr.getFechaAlta().toDateSql());
 		this.rsUsuarios.updateString("claveAcceso", usr.getClaveAcceso().getTexto());
 		this.rsUsuarios.updateString("rol", usr.getRol().toString());
 		this.rsUsuarios.insertRow();
@@ -388,22 +382,22 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	/**
 	 * Da de baja un usuario de la base de datos.
+	 * 
 	 * @param idUsr, id del usuario a dar de baja.
 	 * @throws DatosException
 	 */
 	@Override
-	public Usuario baja(String id) throws DatosException  {
+	public Usuario baja(String id) throws DatosException {
 		assert id != null;
 		assert !id.equals("");
 		assert !id.equals(" ");
-		
+
 		Usuario usr = obtener(id);
 		if (usr != null) {
 			try {
 				this.bufferUsuarios.remove(usr);
-				this.stUsuarios.executeQuery("DELETE FROM usuarios WHERE id = '" + usr.getId() + "'");
-			} 
-			catch (SQLException e) {
+				this.stUsuarios.executeUpdate("DELETE FROM usuarios WHERE id = '" + usr.getId() + "'");
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 			return usr;
@@ -413,8 +407,9 @@ public class UsuariosDAO implements OperacionesDAO {
 
 	/**
 	 * Modifica un usuario de la base de datos.
+	 * 
 	 * @param usr, objeto Usuario con los valores a cambiar.
-	 * @throws DatosException 
+	 * @throws DatosException
 	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
@@ -425,32 +420,29 @@ public class UsuariosDAO implements OperacionesDAO {
 			try {
 				this.bufferUsuarios.remove(usrPrevio);
 				this.bufferUsuarios.add(usrActualizado);
-				this.stUsuarios.executeQuery("UPDATE usuarios SET "
-						+ " nif = " + usrActualizado.getNif() + ","
-						+ " correo = " + usrActualizado.getCorreo().getTexto() + ","
-						+ " nombre = " + usrActualizado.getNombre() + ","
-						+ " apellidos = " + usrActualizado.getApellidos() + ","
-						+ " calle = " + usrActualizado.getDomicilio().getCalle() + ","
-						+ " numero = " + usrActualizado.getDomicilio().getNumero() + ","
-						+ " cp = " + usrActualizado.getDomicilio().getCp() + ","
-						+ " poblacion = " + usrActualizado.getDomicilio().getPoblacion() + ","
-						+ " fechaNacimiento = " + new java.sql.Date(usrActualizado.getFechaNacimiento().toDate().getTime()) + ","
-						+ " fechaAlta = " + new java.sql.Date(usrActualizado.getFechaAlta().toDate().getTime()) + ","
-						+ " claveAcceso = " + usrActualizado.getClaveAcceso().getTexto() + ","
-						+ " rol = " + usrActualizado.getRol().toString() 
-						+ " WHERE id = '" + usrPrevio.getId() + "';"
-						);
+				this.stUsuarios.executeUpdate("UPDATE usuarios SET " + " nif = '" + usrActualizado.getNif() + "',"
+						+ " correo = '" + usrActualizado.getCorreo().getTexto() + "'," + " nombre = '"
+						+ usrActualizado.getNombre() + "'," + " apellidos = '" + usrActualizado.getApellidos() + "',"
+						+ " calle = '" + usrActualizado.getDomicilio().getCalle() + "'," + " numero = '"
+						+ usrActualizado.getDomicilio().getNumero() + "'," + " cp = '"
+						+ usrActualizado.getDomicilio().getCp() + "'," + " poblacion = '"
+						+ usrActualizado.getDomicilio().getPoblacion() + "'," + " fechaNacimiento = '"
+						+ usrActualizado.getFechaNacimiento().toDateSql() + "'," + " fechaAlta = '"
+						+ usrActualizado.getFechaAlta().toDateSql() + "'," + " claveAcceso = '"
+						+ usrActualizado.getClaveAcceso().getTexto() + "'," + " rol = '"
+						+ usrActualizado.getRol().toString() + "' WHERE id = '" + usrPrevio.getId() + "';");
 				return;
-			} 
-			catch (SQLException e) {
+			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 		}
-		throw new DatosException("Actualizar: "+ usrActualizado.getId() + " no existe.");
+		throw new DatosException("Actualizar: " + usrActualizado.getId() + " no existe.");
 	}
 
-	/** Devuelve listado completo de usuarios.
-	 *  @return texto con el volcado de todos los usuarios.
+	/**
+	 * Devuelve listado completo de usuarios.
+	 * 
+	 * @return texto con el volcado de todos los usuarios.
 	 */
 	@Override
 	public String listarDatos() {
@@ -458,12 +450,12 @@ public class UsuariosDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * Obtiene todos los usuarios almacenados. 
-	 * Si no hay resultados devuelve null.
+	 * Obtiene todos los usuarios almacenados. Si no hay resultados devuelve null.
+	 * 
 	 * @param idUsr a obtener.
 	 * @return (DefaultTableModel) result obtenido.
-	 * @throws SQLException 
-	 */	
+	 * @throws SQLException
+	 */
 	public ArrayList<Usuario> obtenerTodos() {
 		try {
 			// Se realiza la consulta y los resultados quedan en el ResultSet
@@ -479,9 +471,8 @@ public class UsuariosDAO implements OperacionesDAO {
 			this.rellenarFilasModelo();
 
 			// Actualiza buffer de objetos.
-			this.sincronizarBufferUsuarios();	
-		} 
-		catch (SQLException e) {
+			this.sincronizarBufferUsuarios();
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return (ArrayList<Usuario>) this.bufferUsuarios;
@@ -491,24 +482,23 @@ public class UsuariosDAO implements OperacionesDAO {
 	public void borrarTodo() {
 		bufferUsuarios.clear();
 		try {
-			this.stUsuarios.executeQuery("DELETE FROM usuarios");
+			this.stUsuarios.executeUpdate("DELETE FROM usuarios");
 			cargarPredeterminados();
-		} 
-		catch (SQLException | DatosException e) {
+		} catch (SQLException | DatosException e) {
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Obtiene el listado de todos id de los objetos almacenados.
+	 * 
 	 * @return el texto con el volcado de id.
 	 */
 	@Override
 	public String listarId() {
 		try {
 			this.rsUsuarios = stUsuarios.executeQuery("SELECT id FROM usuarios");
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		this.establecerColumnasModelo();
@@ -528,10 +518,9 @@ public class UsuariosDAO implements OperacionesDAO {
 	public void cerrar() {
 		try {
 			stUsuarios.close();
-		} 
-		catch (SQLException e) {
+		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 } // class
