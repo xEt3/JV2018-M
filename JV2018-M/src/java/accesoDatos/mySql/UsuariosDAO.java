@@ -16,6 +16,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.table.DefaultTableModel;
 
 import java.sql.Connection;
@@ -27,7 +29,6 @@ import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
 import modelo.ModeloException;
-import modelo.Mundo;
 import modelo.Nif;
 import modelo.Usuario;
 import modelo.Usuario.RolUsuario;
@@ -255,7 +256,6 @@ public class UsuariosDAO implements OperacionesDAO {
 		bufferUsuarios.clear();
 		for (int i = 0; i < tmUsuarios.getRowCount(); i++) {
 			try {
-				String id = (String) tmUsuarios.getValueAt(i, 0);
 				Nif nif = new Nif((String) tmUsuarios.getValueAt(i, 1));
 				Correo correo = new Correo((String) tmUsuarios.getValueAt(i, 2));
 				String nombre = (String) tmUsuarios.getValueAt(i, 3);
@@ -496,19 +496,12 @@ public class UsuariosDAO implements OperacionesDAO {
 	 */
 	@Override
 	public String listarId() {
-		try {
-			this.rsUsuarios = stUsuarios.executeQuery("SELECT id FROM usuarios");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		this.establecerColumnasModelo();
-		this.borrarFilasModelo();
-		this.rellenarFilasModelo();
-		StringBuilder result = new StringBuilder();
-		for (int i = 0; i < tmUsuarios.getRowCount(); i++) {
-			String id = (String) tmUsuarios.getValueAt(i, 0);
-		}
-		return result.toString();
+	    List<Usuario> usuarios = obtenerTodos();
+        StringBuilder usuariosAMostrar = new StringBuilder();
+        for (int i = 0; i < usuarios.size(); i++) {
+            usuariosAMostrar.append(usuarios.get(i).getId()).append("\n");
+        }
+        return usuariosAMostrar.toString();
 	}
 
 	/**

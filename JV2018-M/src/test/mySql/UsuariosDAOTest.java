@@ -13,6 +13,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -28,8 +33,10 @@ import modelo.ClaveAcceso;
 import modelo.Correo;
 import modelo.DireccionPostal;
 import modelo.ModeloException;
+import modelo.Mundo;
 import modelo.Nif;
 import modelo.Usuario;
+import modelo.Mundo.FormaEspacio;
 import modelo.Usuario.RolUsuario;
 import util.Fecha;
 
@@ -131,12 +138,45 @@ public class UsuariosDAOTest {
 
 	@Test
 	public void testListarDatos() {
-		System.out.println(usuariosDAO1.listarDatos());
+		try {
+			Usuario usuario1 = new Usuario(new Nif("17197760Q"), "Antonio",
+					"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+					new Correo("antonio@gmail.com"), new Fecha(1990, 11, 12), 
+					new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+			Usuario usuario2= new Usuario(new Nif("52149567B"), "Fernando",
+					"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+					new Correo("fernando@gmail.com"), new Fecha(1990, 11, 12), 
+					new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+			usuariosDAO1.alta(usuario1);
+			usuariosDAO1.alta(usuario2);
+			List<Usuario> usuarios = usuariosDAO1.obtenerTodos();
+			assertEquals(usuariosDAO1.listarDatos(),usuarios.toString());
+		} catch (ModeloException | DatosException e) {
+			fail("No debe llegar aquí...");
+		}
 	}
-
 	@Test
 	public void testListarId() {
-		usuariosDAO1.listarId();
+		try {
+			Usuario usuario1 = new Usuario(new Nif("17197760Q"), "Antonio",
+					"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+					new Correo("antonio@gmail.com"), new Fecha(1990, 11, 12), 
+					new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+			Usuario usuario2= new Usuario(new Nif("52149567B"), "Fernando",
+					"Belmonte Alón", new DireccionPostal("Alta", "10", "30012", "Murcia"), 
+					new Correo("fernando@gmail.com"), new Fecha(1990, 11, 12), 
+					new Fecha(2018, 02, 05), new ClaveAcceso("Miau#32"), RolUsuario.NORMAL);
+			usuariosDAO1.alta(usuario1);
+			usuariosDAO1.alta(usuario2);
+			StringBuilder idUsuarios = new StringBuilder();
+			List<Usuario> usuarios = usuariosDAO1.obtenerTodos();
+			for (int i = 0; i < usuarios.size(); i++) {
+				idUsuarios.append(usuarios.get(i).getId()+"\n");
+			}
+			assertEquals(usuariosDAO1.listarId(),idUsuarios.toString());
+		} catch (ModeloException | DatosException e) {
+			fail("No debe llegar aquí...");
+		}
 	}
 
 } //class
