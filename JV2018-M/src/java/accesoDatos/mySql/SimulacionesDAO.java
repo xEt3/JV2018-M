@@ -252,7 +252,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 	}
 
 	/**
-	 * Obtiene todas las sesiones por IdUsr de usuario.
+	 * Obtiene todas las simulaciones por IdUsr de usuario.
 	 * 
 	 * @param idUsr - el idUsr a buscar.
 	 * @return - las sesiones encontradas.
@@ -312,7 +312,6 @@ public class SimulacionesDAO implements OperacionesDAO {
 				+"'"+ simulacion.getMundo().getId()+"'," 
 				+ simulacion.getCiclos()+ ","
 				+ "'"+ formatearEstadoSimulacion(simulacion.getEstado()) +"');");
-		
 		return sqlQuery.toString();
 	}
 
@@ -328,8 +327,9 @@ public class SimulacionesDAO implements OperacionesDAO {
 		}
 		return null;
 	}
+	
 	/**
-	 * Baja de una sesion existente.
+	 * Baja de una simulacion existente.
 	 * 
 	 * @param id de la sesion
 	 * @throws DatosException - si no la encuentra
@@ -340,9 +340,7 @@ public class SimulacionesDAO implements OperacionesDAO {
 		assert id != null;
 		assert !id.matches("");
 		assert !id.matches("[ ]+");
-		
 		Simulacion simulacion = (Simulacion) obtener(id);
-		
 		if (simulacion != null) {
 			try {
 				bufferSimulaciones.remove(simulacion);
@@ -354,7 +352,6 @@ public class SimulacionesDAO implements OperacionesDAO {
 			return simulacion;
 		}
 		throw new DatosException("Baja: " + id + " no existe...");
-
 	}
 
 	/**
@@ -381,22 +378,19 @@ public class SimulacionesDAO implements OperacionesDAO {
 		}
 		throw new DatosException("Actualizar: "+ simulacionActualizada.getId() + " no existe.");
 	}
+	
 	/**
-	 * Consulta que se lanza para actualizar el mundo de la base de datos.
+	 * Consulta que se lanza para actualizar la simulacion de la base de datos.
 	 * @param simulacionActualizada
-	 * @return - Devuelve la QuerySQL para actualizar el mundo.
+	 * @return - Devuelve la QuerySQL para actualizar la sesion.
 	 */
 	private String obtenerConsultaActualizar(Simulacion simulacionActualizada) {
-		String id_usr = simulacionActualizada.getId();
+		String id_usr = simulacionActualizada.getUsr().getId();
 		Fecha fecha= simulacionActualizada.getFecha();
 		String idMundo = simulacionActualizada.getMundo().getId();
 		int ciclos = simulacionActualizada.getCiclos();
 		EstadoSimulacion estado = simulacionActualizada.getEstado();
-		
 		StringBuilder query = new StringBuilder();
-		
-
-		
 		query.append("UPDATE SIMULACION SET id_usuario = '" + id_usr + "', fecha  = '" + fecha.getGregorian() + "', id:mundo  = '" + idMundo
 				+ "', ciclos = '" + ciclos + "', estado = '" + formatearEstadoSimulacion(estado)
 				+ "' WHERE id_simulacion LIKE'"+ simulacionActualizada.getId()+"'");
@@ -405,9 +399,9 @@ public class SimulacionesDAO implements OperacionesDAO {
 
 	
 	/**
-	 * Devuelve los datos de todas las Sesiones de usuario como String
+	 * Devuelve los datos de todas las Simulaciones de usuario como String
 	 * 
-	 * @return un String con los datos de todas las sesiones.
+	 * @return un String con los datos de todas las simulaciones.
 	 */
 	@Override
 	public String listarDatos() {
