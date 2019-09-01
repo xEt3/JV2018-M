@@ -81,7 +81,7 @@ public class SimulacionesDAOTest {
 	}
 
 	@Test
-	public void testMundosDAODefecto() {
+	public void testSimulacionDAODefecto() {
 		assertNotNull(simulacionesDAO1);
 	}
 
