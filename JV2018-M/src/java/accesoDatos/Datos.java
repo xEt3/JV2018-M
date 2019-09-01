@@ -13,7 +13,7 @@ import java.util.List;
 
 import accesoDatos.db4o.UsuariosDAO;
 import accesoDatos.db4o.MundosDAO;
-import accesoDatos.db4o.SesionesDAO;
+import accesoDatos.db4o.SesionesUsuarioDAO;
 import accesoDatos.db4o.SimulacionesDAO;
 import modelo.Identificable;
 import modelo.ModeloException;
@@ -25,7 +25,7 @@ import modelo.Usuario;
 public class Datos {
 
 	private UsuariosDAO usuariosDAO; 
-	private SesionesDAO sesionesDAO;
+	private SesionesUsuarioDAO sesionesDAO;
 	private SimulacionesDAO simulacionesDAO;
 	private MundosDAO mundosDAO;
 
@@ -34,7 +34,7 @@ public class Datos {
 	 */
 	public Datos() {
 		usuariosDAO = UsuariosDAO.getInstance();
-		sesionesDAO = SesionesDAO.getInstance();
+		sesionesDAO = SesionesUsuarioDAO.getInstance();
 		mundosDAO = MundosDAO.getInstance();
 		simulacionesDAO = SimulacionesDAO.getInstance();
 	}

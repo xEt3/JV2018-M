@@ -25,16 +25,16 @@ import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.SesionUsuario;
 
-public class SesionesDAO implements OperacionesDAO {
+public class SesionesUsuarioDAO implements OperacionesDAO {
 
 	// Singleton.
-	private static SesionesDAO instance;
+	private static SesionesUsuarioDAO instance;
 
 	// Base de datos
 	private ObjectContainer db;
 
 	// Constructor
-	private SesionesDAO() {
+	private SesionesUsuarioDAO() {
 		db = Conexion.getDB();
 	}
 
@@ -45,9 +45,9 @@ public class SesionesDAO implements OperacionesDAO {
 	 * 
 	 * @return instance
 	 */
-	public static SesionesDAO getInstance() {
+	public static SesionesUsuarioDAO getInstance() {
 		if (instance == null) {
-			instance = new SesionesDAO();
+			instance = new SesionesUsuarioDAO();
 		}
 		return instance;
 	}

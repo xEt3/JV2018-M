@@ -23,7 +23,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import accesoDatos.db4o.SesionesDAO;
+import accesoDatos.db4o.SesionesUsuarioDAO;
 import modelo.*;
 import modelo.SesionUsuario.EstadoSesion;
 import modelo.Usuario.RolUsuario;
@@ -38,7 +38,7 @@ public class SesionesDAOTest {
 	private SesionUsuario sesion1_2;
 	private SesionUsuario sesion2;
 	private SesionUsuario sesion3;
-	private SesionesDAO sesionesDAO;
+	private SesionesUsuarioDAO sesionesDAO;
 
 	/**
 	 * Método que se ejecuta antes de cada @Test
@@ -47,7 +47,7 @@ public class SesionesDAOTest {
 	public void reiniciarBaseDeDatos() {
 		// Objetos no modicados en las pruebas.
 		try {
-			sesionesDAO = SesionesDAO.getInstance();
+			sesionesDAO = SesionesUsuarioDAO.getInstance();
 			sesionesDAO.borrarTodo();
 			usuario1 = new Usuario();
 			usuario2 = new Usuario(new Nif("00000002W"), "Perico", "Pérez López", new DireccionPostal(), new Correo(),
