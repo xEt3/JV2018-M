@@ -20,6 +20,7 @@ public class SesionUsuario implements Identificable, Serializable {
 	private Fecha fecha;
 	public enum EstadoSesion { EN_PREPARACION, ACTIVA, CERRADA }
 	private EstadoSesion estado;
+	private String id;
 	
 	/**
 	 * Constructor convencional. Utiliza métodos set...()
@@ -30,8 +31,16 @@ public class SesionUsuario implements Identificable, Serializable {
 		setUsr(usr);
 		setFecha(fecha);
 		setEstado(estado);
+		setId();
 	}
 
+	public SesionUsuario(String id,Usuario usr, Fecha fecha, EstadoSesion estado) {
+		setUsr(usr);
+		setFecha(fecha);
+		setEstado(estado);
+		this.id=id;
+	}
+	
 	/**
 	 * Constructor por defecto. Utiliza constructor convencional.
 	 * @throws ModeloException 
@@ -51,7 +60,11 @@ public class SesionUsuario implements Identificable, Serializable {
 	}
 
 	public String getId() {	
-		return this.usr.getId() + ":" + fecha.toStringMarcaTiempo();
+		return id;
+	}
+	
+	private void setId() {
+		id= this.usr.getId() + ":" + fecha.toStringMarcaTiempo();
 	}
 	
 	public Usuario getUsr() {
