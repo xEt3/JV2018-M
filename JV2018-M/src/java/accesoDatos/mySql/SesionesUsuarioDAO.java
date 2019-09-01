@@ -35,10 +35,10 @@ import modelo.SesionUsuario.EstadoSesion;
 import modelo.Simulacion.EstadoSimulacion;
 import util.*;
 
-public class SesionesDAO implements OperacionesDAO {
+public class SesionesUsuarioDAO implements OperacionesDAO {
 
 	// Singleton.
-	private static SesionesDAO instance;
+	private static SesionesUsuarioDAO instance;
 
 	// Base de datos
 	private Connection db;
@@ -50,7 +50,7 @@ public class SesionesDAO implements OperacionesDAO {
 	private ArrayList<SesionUsuario> bufferSesiones;
 
 	// Constructor
-	private SesionesDAO() {
+	private SesionesUsuarioDAO() {
 		db = Conexion.getDB();
 		try {
 			inicializar();
@@ -66,9 +66,9 @@ public class SesionesDAO implements OperacionesDAO {
 	 * 
 	 * @return instance
 	 */
-	public static SesionesDAO getInstance() {
+	public static SesionesUsuarioDAO getInstance() {
 		if (instance == null) {
-			instance = new SesionesDAO();
+			instance = new SesionesUsuarioDAO();
 		}
 		return instance;
 	}
@@ -86,6 +86,8 @@ public class SesionesDAO implements OperacionesDAO {
 			crearTablaSesiones();
 		} catch (SQLException e) {
 		}
+		tmSesiones= new DefaultTableModel();
+		bufferSesiones = new ArrayList<>();
 	}
 
 	/**
@@ -97,7 +99,7 @@ public class SesionesDAO implements OperacionesDAO {
 								+ "id_sesion VARCHAR(255) NOT NULL PRIMARY KEY,"
 								+ "id_usuario VARCHAR(45) NOT NULL,"
 								+ "fecha DATETIME NOT NULL,"
-								+ "estado VARCHAR(20) NOT NULL,"
+								+ "estado VARCHAR(20) NOT NULL"
 								+ ")");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -136,8 +138,10 @@ public class SesionesDAO implements OperacionesDAO {
 	private void etiquetarColumnasModelo() {
 		try {
 			ResultSetMetaData metaDatos = this.rsSesiones.getMetaData();
+			
 			// numero total de columnas
 			int numCol = metaDatos.getColumnCount();
+			
 			// etiqueta de cada columna
 			Object[] etiquetas = new Object[numCol];
 			for (int i = 0; i < numCol; i++) {
@@ -145,6 +149,7 @@ public class SesionesDAO implements OperacionesDAO {
 			}
 			// Incorpora array de etiquetas en el TableModel.
 			this.tmSesiones.setColumnIdentifiers(etiquetas);
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -177,7 +182,7 @@ public class SesionesDAO implements OperacionesDAO {
 				String id_sesion = (String) tmSesiones.getValueAt(i, 0);
 				String id_usuario = (String) tmSesiones.getValueAt(i, 1);
 				Fecha fecha  = obtenerFechaFromDateTime(tmSesiones.getValueAt(i, 2).toString());
-				EstadoSesion estado = obtenerEstadoSesion((String)tmSesiones.getValueAt(i, 5));
+				EstadoSesion estado = obtenerEstadoSesion((String)tmSesiones.getValueAt(i, 3));
 				UsuariosDAO usrDAO = UsuariosDAO.getInstance();
 				bufferSesiones.add(new SesionUsuario(id_sesion,usrDAO.obtener(id_usuario),fecha,estado));
 			}catch(Exception e) {
