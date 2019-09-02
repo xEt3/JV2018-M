@@ -370,7 +370,7 @@ public class MundosDAO implements OperacionesDAO {
 	}
 
 	@Override
-	public Object baja(String id) throws DatosException {
+	public Mundo baja(String id) throws DatosException {
 		assert id != null;
 		assert !id.matches("");
 		assert !id.matches("[ ]+");
