@@ -20,6 +20,12 @@ public class PresenterEjecucionSimulacion {
 	private VistaEjecucionSimulacion vistaSimulacion;
 	private Simulacion simulacion;
 	private Mundo mundo;
+	private Thread hiloSimulacion = new Thread(new Runnable() {
+		@Override
+		public void run() {
+			movimientoSimulacion();
+		}
+	});
 	
 	public PresenterEjecucionSimulacion(Simulacion simulacion) {
 		assert simulacion != null;
@@ -37,11 +43,15 @@ public class PresenterEjecucionSimulacion {
 		arrancarSimulacion();
 	}
 	
+	private void arrancarSimulacion() {
+		hiloSimulacion.start();
+	}
+
 	/**
 	 * Ejecuta una simulación del juego de la vida, en la consola,
 	 * durante un número de CICLOS.
 	 */
-	public void arrancarSimulacion() {
+	public void movimientoSimulacion() {
 		int gen = 0; 		//Generaciones
 		do {
 			vistaSimulacion.getTextAreaVisualizacion().append("\nGeneración: " + gen + "\n");
@@ -50,6 +60,10 @@ public class PresenterEjecucionSimulacion {
 			gen++;
 		}
 		while (gen <= ciclos);
+	}
+	
+	public void pararSimulacion() {
+		
 	}
 	
 	public Simulacion getSimulacion() {
