@@ -142,10 +142,9 @@ public class Mundo implements Identificable, Serializable {
 
 	private void extraerDistribucion() {
 		for (int i=0; i < espacio.length; i++) {
-			for (int j=0; i < espacio.length; j++) {
+			for (int j=0; j < espacio.length; j++) {
 				if(espacio[i][j] == 1) {	
 					distribucion.add(new Posicion(i, j));
-					tamañoMundo = i;
 				}
 			}	
 		}
@@ -442,6 +441,7 @@ public class Mundo implements Identificable, Serializable {
 	}
 	
 	public List<Posicion> getDistribucion(){
+		extraerDistribucion();
 		return distribucion;
 	}
 
